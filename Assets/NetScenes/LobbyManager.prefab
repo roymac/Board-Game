@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1808354638778276}
+  m_IsPrefabParent: 1
+--- !u!1 &1808354638778276
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4316225682678058}
+  - component: {fileID: 114821886946695804}
+  - component: {fileID: 114105107210657002}
+  m_Layer: 0
+  m_Name: LobbyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4316225682678058
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1808354638778276}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 536.78986, y: 321.43365, z: -2.4375}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114105107210657002
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1808354638778276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3441f90e1564e40a9fd9256be8b943, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isSelected: 0
+  ownManager: {fileID: 0}
+  noOfPlayers: 0
+  isplayerReady: 0
+  startGameBtn: {fileID: 0}
+  roomName: 
+  playerOneField: 
+  playerTwoField: 
+  playerThreeField: 
+  playerFourField: 
+  P1Field: {fileID: 0}
+  P2Field: {fileID: 0}
+  P3Field: {fileID: 0}
+  P4Field: {fileID: 0}
+  roomNameHeader: {fileID: 0}
+  textData: {fileID: 0}
+  isReady: 0
+--- !u!114 &114821886946695804
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1808354638778276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 206
+    i1: 99
+    i2: 98
+    i3: 202
+    i4: 131
+    i5: 76
+    i6: 73
+    i7: 196
+    i8: 27
+    i9: 170
+    i10: 63
+    i11: 103
+    i12: 191
+    i13: 195
+    i14: 107
+    i15: 189
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1

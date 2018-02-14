@@ -1,0 +1,550 @@
+fileFormatVersion: 2
+guid: bfb796ccdd02f2249a389a29ed50da96
+timeCreated: 1518245306
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Chair
+    100004: Chair001
+    100006: Chair004
+    100008: Chair005
+    100010: DesertPlatform
+    100012: DesertPlatform 1
+    100014: DesertPlatform004
+    100016: DesertPlatform005
+    100018: DesertPlatform006
+    100020: GreenGrassPlatform_01
+    100022: LavaPlatform
+    100024: LavaPlatform004
+    100026: LavaPlatform005
+    100028: LavaPlatform006
+    100030: LavaSample2
+    100032: Middle_Animation_Part
+    100034: Middle_OutsideRing.
+    100036: PillarUnwrapped
+    100038: PillarUnwrapped001
+    100040: PillarUnwrappedLava
+    100042: PillarUnwrappedLava001
+    100044: PillarUnwrappedLava002
+    100046: PillarUnwrappedLava003
+    100048: PillarUnwrappedLava005
+    100050: PillarUnwrappedLava006
+    100052: PlayerPlatform004
+    100054: PlayerPlatform005
+    100056: PlayerPlatform006
+    100058: PlayerPlatform007
+    100060: PointedThing_Dome
+    100062: PointedThing_Dome004
+    100064: PointedThing_Dome005
+    100066: PointedThing_Dome006
+    100068: SnowPlatform003
+    100070: SnowPlatform004
+    100072: SnowPlatform005
+    100074: SnowPlatform006
+    100076: TempleGreen
+    100078: TempleLava
+    100080: TempleRedDesert
+    100082: TempleSnow
+    100084: Wall_002
+    100086: Wall_004
+    100088: Wall_Lava
+    100090: Wall_Lava001
+    100092: Wall_Lava004
+    100094: Wall_Lava006
+    100096: Wall_Snow
+    100098: Wall_Snow001
+    100100: WallUpperPart
+    100102: WallUpperPart003
+    100104: WallUpperPartLava
+    100106: WallUpperPartLava001
+    100108: WallUpperPartLava003
+    100110: WallUpperPartLava006
+    100112: WallUpperPartSnow
+    100114: WallUpperPartSnow001
+    100116: WaterPlatform_002
+    100118: WeaponStand
+    100120: WeaponStand001
+    100122: WeaponStand004
+    100124: WeaponStand005
+    400000: //RootNode
+    400002: Chair
+    400004: Chair001
+    400006: Chair004
+    400008: Chair005
+    400010: DesertPlatform
+    400012: DesertPlatform 1
+    400014: DesertPlatform004
+    400016: DesertPlatform005
+    400018: DesertPlatform006
+    400020: GreenGrassPlatform_01
+    400022: LavaPlatform
+    400024: LavaPlatform004
+    400026: LavaPlatform005
+    400028: LavaPlatform006
+    400030: LavaSample2
+    400032: Middle_Animation_Part
+    400034: Middle_OutsideRing.
+    400036: PillarUnwrapped
+    400038: PillarUnwrapped001
+    400040: PillarUnwrappedLava
+    400042: PillarUnwrappedLava001
+    400044: PillarUnwrappedLava002
+    400046: PillarUnwrappedLava003
+    400048: PillarUnwrappedLava005
+    400050: PillarUnwrappedLava006
+    400052: PlayerPlatform004
+    400054: PlayerPlatform005
+    400056: PlayerPlatform006
+    400058: PlayerPlatform007
+    400060: PointedThing_Dome
+    400062: PointedThing_Dome004
+    400064: PointedThing_Dome005
+    400066: PointedThing_Dome006
+    400068: SnowPlatform003
+    400070: SnowPlatform004
+    400072: SnowPlatform005
+    400074: SnowPlatform006
+    400076: TempleGreen
+    400078: TempleLava
+    400080: TempleRedDesert
+    400082: TempleSnow
+    400084: Wall_002
+    400086: Wall_004
+    400088: Wall_Lava
+    400090: Wall_Lava001
+    400092: Wall_Lava004
+    400094: Wall_Lava006
+    400096: Wall_Snow
+    400098: Wall_Snow001
+    400100: WallUpperPart
+    400102: WallUpperPart003
+    400104: WallUpperPartLava
+    400106: WallUpperPartLava001
+    400108: WallUpperPartLava003
+    400110: WallUpperPartLava006
+    400112: WallUpperPartSnow
+    400114: WallUpperPartSnow001
+    400116: WaterPlatform_002
+    400118: WeaponStand
+    400120: WeaponStand001
+    400122: WeaponStand004
+    400124: WeaponStand005
+    2300000: //RootNode
+    2300002: Chair
+    2300004: Chair001
+    2300006: Chair004
+    2300008: Chair005
+    2300010: DesertPlatform
+    2300012: DesertPlatform 1
+    2300014: DesertPlatform004
+    2300016: DesertPlatform005
+    2300018: DesertPlatform006
+    2300020: GreenGrassPlatform_01
+    2300022: LavaPlatform
+    2300024: LavaPlatform004
+    2300026: LavaPlatform005
+    2300028: LavaPlatform006
+    2300030: LavaSample2
+    2300032: Middle_Animation_Part
+    2300034: Middle_OutsideRing.
+    2300036: PillarUnwrapped
+    2300038: PillarUnwrapped001
+    2300040: PillarUnwrappedLava
+    2300042: PillarUnwrappedLava001
+    2300044: PillarUnwrappedLava002
+    2300046: PillarUnwrappedLava003
+    2300048: PillarUnwrappedLava005
+    2300050: PillarUnwrappedLava006
+    2300052: PlayerPlatform004
+    2300054: PlayerPlatform005
+    2300056: PlayerPlatform006
+    2300058: PlayerPlatform007
+    2300060: PointedThing_Dome
+    2300062: PointedThing_Dome004
+    2300064: PointedThing_Dome005
+    2300066: PointedThing_Dome006
+    2300068: SnowPlatform003
+    2300070: SnowPlatform004
+    2300072: SnowPlatform005
+    2300074: SnowPlatform006
+    2300076: TempleGreen
+    2300078: TempleLava
+    2300080: TempleRedDesert
+    2300082: TempleSnow
+    2300084: Wall_002
+    2300086: Wall_004
+    2300088: Wall_Lava
+    2300090: Wall_Lava001
+    2300092: Wall_Lava004
+    2300094: Wall_Lava006
+    2300096: Wall_Snow
+    2300098: Wall_Snow001
+    2300100: WallUpperPart
+    2300102: WallUpperPart003
+    2300104: WallUpperPartLava
+    2300106: WallUpperPartLava001
+    2300108: WallUpperPartLava003
+    2300110: WallUpperPartLava006
+    2300112: WallUpperPartSnow
+    2300114: WallUpperPartSnow001
+    2300116: WaterPlatform_002
+    2300118: WeaponStand
+    2300120: WeaponStand001
+    2300122: WeaponStand004
+    2300124: WeaponStand005
+    3300000: //RootNode
+    3300002: Chair
+    3300004: Chair001
+    3300006: Chair004
+    3300008: Chair005
+    3300010: DesertPlatform
+    3300012: DesertPlatform 1
+    3300014: DesertPlatform004
+    3300016: DesertPlatform005
+    3300018: DesertPlatform006
+    3300020: GreenGrassPlatform_01
+    3300022: LavaPlatform
+    3300024: LavaPlatform004
+    3300026: LavaPlatform005
+    3300028: LavaPlatform006
+    3300030: LavaSample2
+    3300032: Middle_Animation_Part
+    3300034: Middle_OutsideRing.
+    3300036: PillarUnwrapped
+    3300038: PillarUnwrapped001
+    3300040: PillarUnwrappedLava
+    3300042: PillarUnwrappedLava001
+    3300044: PillarUnwrappedLava002
+    3300046: PillarUnwrappedLava003
+    3300048: PillarUnwrappedLava005
+    3300050: PillarUnwrappedLava006
+    3300052: PlayerPlatform004
+    3300054: PlayerPlatform005
+    3300056: PlayerPlatform006
+    3300058: PlayerPlatform007
+    3300060: PointedThing_Dome
+    3300062: PointedThing_Dome004
+    3300064: PointedThing_Dome005
+    3300066: PointedThing_Dome006
+    3300068: SnowPlatform003
+    3300070: SnowPlatform004
+    3300072: SnowPlatform005
+    3300074: SnowPlatform006
+    3300076: TempleGreen
+    3300078: TempleLava
+    3300080: TempleRedDesert
+    3300082: TempleSnow
+    3300084: Wall_002
+    3300086: Wall_004
+    3300088: Wall_Lava
+    3300090: Wall_Lava001
+    3300092: Wall_Lava004
+    3300094: Wall_Lava006
+    3300096: Wall_Snow
+    3300098: Wall_Snow001
+    3300100: WallUpperPart
+    3300102: WallUpperPart003
+    3300104: WallUpperPartLava
+    3300106: WallUpperPartLava001
+    3300108: WallUpperPartLava003
+    3300110: WallUpperPartLava006
+    3300112: WallUpperPartSnow
+    3300114: WallUpperPartSnow001
+    3300116: WaterPlatform_002
+    3300118: WeaponStand
+    3300120: WeaponStand001
+    3300122: WeaponStand004
+    3300124: WeaponStand005
+    4300000: Board
+    4300002: TempleLava
+    4300004: WallUpperPartLava001
+    4300006: Wall_Lava001
+    4300008: WeaponStand001
+    4300010: PointedThing_Dome004
+    4300012: WallUpperPartLava
+    4300014: PillarUnwrappedLava005
+    4300016: Wall_Lava
+    4300018: PillarUnwrappedLava
+    4300020: LavaPlatform005
+    4300022: LavaPlatform006
+    4300024: LavaPlatform004
+    4300026: LavaPlatform
+    4300028: Chair001
+    4300030: TempleSnow
+    4300032: PointedThing_Dome
+    4300034: Wall_Snow001
+    4300036: WallUpperPartSnow001
+    4300038: WallUpperPartSnow
+    4300040: PillarUnwrappedLava003
+    4300042: PillarUnwrappedLava002
+    4300044: Wall_Snow
+    4300046: WeaponStand
+    4300048: Chair
+    4300050: SnowPlatform003
+    4300052: SnowPlatform004
+    4300054: SnowPlatform005
+    4300056: SnowPlatform006
+    4300058: TempleRedDesert
+    4300060: PointedThing_Dome006
+    4300062: Wall_Lava004
+    4300064: Wall_Lava006
+    4300066: WallUpperPartLava006
+    4300068: PillarUnwrappedLava006
+    4300070: WallUpperPartLava003
+    4300072: PillarUnwrappedLava001
+    4300074: DesertPlatform006
+    4300076: DesertPlatform004
+    4300078: DesertPlatform005
+    4300080: DesertPlatform
+    4300082: Chair005
+    4300084: WeaponStand005
+    4300086: TempleGreen
+    4300088: Wall_002
+    4300090: WallUpperPart
+    4300092: WallUpperPart003
+    4300094: PointedThing_Dome005
+    4300096: PillarUnwrapped001
+    4300098: PillarUnwrapped
+    4300100: Wall_004
+    4300102: PlayerPlatform007
+    4300104: PlayerPlatform005
+    4300106: PlayerPlatform006
+    4300108: PlayerPlatform004
+    4300110: WeaponStand004
+    4300112: Chair004
+    4300114: Middle_Animation_Part
+    4300116: Middle_OutsideRing.
+    4300118: GreenGrassPlatform_01
+    4300120: LavaSample2
+    4300122: DesertPlatform
+    4300124: WaterPlatform_002
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BlueSnowMaterial
+    second: {fileID: 2100000, guid: d2df9cdb364e438489cabfc432d490d2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chair_Matrial
+    second: {fileID: 2100000, guid: cc48098e8a6ca4a48b01a71d81c61a79, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DeseerWallMaterial
+    second: {fileID: 2100000, guid: a592d6166abf8a64ba99659dcd8556cf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DesertMaterial
+    second: {fileID: 2100000, guid: b8f861ede78ea174ea2d3ca715a891d0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DesertPlatformMaterial
+    second: {fileID: 2100000, guid: 50456994ac92df8469a0ee16020aaac4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DesertpillarMaterial
+    second: {fileID: 2100000, guid: 42136ab07d2db144eb67bc0d264891f5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GreenGrassMaterial
+    second: {fileID: 2100000, guid: 68c0690fc4c0647478ded46c77a68f42, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #52'
+    second: {fileID: 2100000, guid: 6ece0a6976dc1c74dbd3cc2456d1d5a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #54'
+    second: {fileID: 2100000, guid: 09717bafbdffc9c40b8c1869110d6fa2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #56'
+    second: {fileID: 2100000, guid: 819b5f2615ba86547b145da6b3ffac9c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #57'
+    second: {fileID: 2100000, guid: 11ca1ccb8bcbc9b4e91e9e57c934626e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #59'
+    second: {fileID: 2100000, guid: 52d307dcaae6b81498266f29de2916e5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #60'
+    second: {fileID: 2100000, guid: 165dde772c4ffe641bc1965071121162, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #61'
+    second: {fileID: 2100000, guid: 989d8621bc48cae498a42362bb58acf5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 'Material #63'
+    second: {fileID: 2100000, guid: cf831d0f1119b384d8a0c1ade16ae085, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MiddleRingMaterial
+    second: {fileID: 2100000, guid: 9f0c837c1feb5054daf41e629075feee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Middle_Cylinder
+    second: {fileID: 2100000, guid: c1851bacb8baa3a4fbee9674ff68d9c1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PillarMaterial
+    second: {fileID: 2100000, guid: f03f505c5a44ae84b918b766f0cfc6be, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Platform_Material
+    second: {fileID: 2100000, guid: 2ee18638a4dde8149829018963ecd8dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PointedThingMaterial
+    second: {fileID: 2100000, guid: d7fc6ffc0231cbc438f4761b33843905, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SnowMaterial
+    second: {fileID: 2100000, guid: 8d08d1ea79c884642a4341ccafe46138, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SnowPillarMaterial
+    second: {fileID: 2100000, guid: f3cb08f9c01ecc845a0796631e9cc695, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SnowPlatformMaterial
+    second: {fileID: 2100000, guid: 4fc0a7c67db58e0409621640e354970c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SnowWallMaterial
+    second: {fileID: 2100000, guid: da00bcab9fc0d2645be6d863c2c7accf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SnowWallTopPartmaterial
+    second: {fileID: 2100000, guid: 14aec62c94f100844b7a2fd56bdc3702, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TempleLavaMaterial
+    second: {fileID: 2100000, guid: cd5f0df51ae94f5429db89309cbea9ba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TempleMaterial
+    second: {fileID: 2100000, guid: 473eb8672ea0fef43852dd29273f0f20, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WallMaterial
+    second: {fileID: 2100000, guid: d68ed169861c38144908575020d77a19, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wall_TopPart
+    second: {fileID: 2100000, guid: 89686bda542762040928a9243daeba60, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WeaponStandMaterial
+    second: {fileID: 2100000, guid: 9215fa800ce272d41b11ee806b058746, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
