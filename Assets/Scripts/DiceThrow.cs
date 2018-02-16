@@ -20,6 +20,7 @@ public class DiceThrow : MonoBehaviour
     int dicecount;
     void Awake()
     {
+        GetComponent<Animator>().speed = 0;
         currentEventCount = -1;
         //diceObject = transform.GetComponent<Rigidbody>();
         SetDiceFaceValues(); 
@@ -30,7 +31,6 @@ public class DiceThrow : MonoBehaviour
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         gm.dice = this;
-        GetComponent<Animator>().speed = 0;
         if (GetComponent<NetworkIdentity>() != null)
         {
             if (!GetComponent<NetworkIdentity>().isServer)
@@ -79,19 +79,15 @@ public class DiceThrow : MonoBehaviour
         {
             if (currentEventCount == EventFrameCount)
             {
-
-                gm.SetDiceVale(framveValues[num]);
                 GetComponent<Animator>().speed = 0;
                 currentEventCount = 0;
-                Debug.Log("StopFrame index is\t"+num);
+                gm.SetDiceVale(framveValues[num]);
             }
         }
     }
 
     public void ThrowDice()
     {
-        rolled = true;
-
         EventFrameCount = Random.Range(10, 28);
         GetComponent<Animator>().speed = 8;
         currentEventCount = 0;

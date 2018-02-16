@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     int playerIndex = -1;
     List<int> DiceValues;
     AchievementsManager am;
+    int allActivePlayerCount = 0;
     public int lockedplayers;
     void Awake()
     {
@@ -125,7 +126,8 @@ public class GameManager : MonoBehaviour
     {
         if (PlayerSelection.playerColor != PawnColor.c_null && currentPlayerTurn != PlayerSelection.playerColor && !PlayerSelection.isNetworkedGame)
         {
-           dice.ThrowDice();
+           Debug.Log("Check");
+           ThrowTheDice();
            return true;
         }
         else
@@ -180,28 +182,39 @@ public class GameManager : MonoBehaviour
     public void SetLockedPlayers()
     {
         lockedplayers++;
-        if (PlayerSelection.isNetworkedGame)
+
+    }
+
+    public void SetActivePlayerDone()
+    {
+        allActivePlayerCount++;
+        if (allActivePlayerCount == 4)
         {
-            if (lockedplayers == 4)
+            if (PlayerSelection.isNetworkedGame)
             {
-                nm_server.SetNextTurn();
-                EventManager.PlayerSelected();
+                if (lockedplayers == 4)
+                {
+                    nm_server.SetNextTurn();
+                    EventManager.PlayerSelected();
+                }
             }
-        }
-        else
-        {
-            if (lockedplayers == 4)
+            else
             {
-                SetNextTurn();
-                EventManager.PlayerSelected();
+                if (lockedplayers == 4)
+                {
+                    SetNextTurn();
+                    EventManager.PlayerSelected();
+                }
             }
+
+            if (lockedplayers == 3)
+            {
+                EventManager.CallOnePlayerOut();
+            }
+
+            allActivePlayerCount = 0;
         }
 
-        if (lockedplayers == 3)
-        {
-            EventManager.CallOnePlayerOut();
-        }
-       
     }
 
     public void CountPawnsAtHome()
@@ -410,6 +423,7 @@ public class GameManager : MonoBehaviour
     public void OnMoveFinished(GameObject player_killed)
     {
         lockedplayers = 0;
+        currentPlayer = null;
         AudioManager.Instance.PawnMove(false);
         if (diceRollValue == 6 || player_killed != null)
         {
@@ -467,12 +481,12 @@ public class GameManager : MonoBehaviour
     public void ShowDice()
     {
         dice.ShowDice(false);
-        AudioManager.Instance.RollTheDice(true);
+        //AudioManager.Instance.RollTheDice(true);
     }
     public void HideDice()
     {
         dice.ShowDice(true);
-        AudioManager.Instance.RollTheDice(false);
+        //AudioManager.Instance.RollTheDice(false);
     }
 
 

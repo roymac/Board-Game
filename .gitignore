@@ -6,4 +6,6 @@ Library
 /*.sln
 *.user
 *.unityproj
+*.Editor
+*.Plugins
 UnityPackageManager
