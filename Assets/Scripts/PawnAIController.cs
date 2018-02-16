@@ -10,10 +10,12 @@ public class PawnAIController : MonoBehaviour
     public int ChaseDistance;
     public PlayerMovement player;
     public AIManager ai_Manager;
+    public bool showDebug;
 	// Use this for initialization
 	void Start () 
     {
         player = GetComponent<PlayerMovement>();
+        ChaseDistance = 10;
 	}
 	
 	// Update is called once per frame
@@ -32,6 +34,36 @@ public class PawnAIController : MonoBehaviour
             return;
         }
 
+        //else, if it is a six and the pawn is locked, move this pawn out of the jail area
+        if (player.diceRoll == 6 && player.canUnlock && player.isLocked)
+        {
+            weight += 150;
+        }
+        //else, if this pawn is the furthest forward, move the pawn forward
+        if (player.MoveConstraint == 0)
+        {
+            weight += ((float)currentTravelledTiles / (float)MaxTilesToTravel) * 100f;
+        } 
+        else
+        {
+            if (player.diceRoll > player.MoveConstraint)
+            {
+                weight = -100000;
+            } 
+            else
+            {
+                if (player.diceRoll == player.MoveConstraint)
+                {
+                    weight += 100000;
+                }
+                else
+                {
+                    weight += 30;
+                }
+               
+            }
+        }
+
         //if there is anyone within a dice roll away from the pawn, add 100 to the weight.
         WaypointScript point = player.target.GetComponent<WaypointScript>().PreviousPoint.GetComponent<WaypointScript>();
         //check the last 6 squares, that is the maximum dice roll
@@ -46,6 +78,8 @@ public class PawnAIController : MonoBehaviour
                     //if it not the same as current pawn, increase weight of this pawn 100
                     weight += 100 * i;
                 }
+                if(showDebug)
+                Debug.Log("Being Chased" + gameObject.name + weight);
             }
             //get the tile before the current tile
             point = point.PreviousPoint.GetComponent<WaypointScript>();
@@ -66,20 +100,24 @@ public class PawnAIController : MonoBehaviour
                     //save the position of the square
                     placeToKnockDown = i;
                     //check if the dice roll is higher than where the players are located, if it is lower, or the diceroll is a six, then add weight according to the number of pawns present
-                    if (player.diceRoll - 1 <= placeToKnockDown && point.isSafeBox || player.canUnlock)
+                    if (player.diceRoll - 1 <= placeToKnockDown && !point.isSafeBox || player.canUnlock)
                     {
                         //number of players present in the target box
                         for (int j = 0; j < point.playerInBox.Count; j++)
                         {
                             //increase weight by 25
                             weight += 25; 
-                        } 
+                        }
+                        if(showDebug)
+                        Debug.Log("Chasing" + gameObject.name + weight);
                     }
                     else
                     {
                         //decrease the weight of this as it will have a higher chance of dying if moved ahead of an opposition
-                        weight-= 50;
-                        weight = Mathf.Clamp(weight, 1, 999999);
+                        if(showDebug)
+                        Debug.Log("Will be eaten if chased"+ gameObject.name + weight);
+                        weight = -10;
+                        //weight = Mathf.Clamp(weight, 0, 999999);
                        
                     }
                     break;
@@ -89,7 +127,7 @@ public class PawnAIController : MonoBehaviour
             else
             {
                 //move to the next waypoint
-				if (point.nextPoint == null)
+				if (point.nextPoint[0] == null)
 				{
 					break;			
 				}
@@ -98,27 +136,7 @@ public class PawnAIController : MonoBehaviour
         }
 
 
-        //else, if it is a six and the pawn is locked, move this pawn out of the jail area
-        if (player.diceRoll == 6 && player.canUnlock)
-        {
-            weight += 75;
-        }
-        //else, if this pawn is the furthest forward, move the pawn forward
-		if (player.MoveConstraint == 0)
-		{
-			weight += ((float)currentTravelledTiles / (float)MaxTilesToTravel) * 100f;
-		} 
-		else
-		{
-			if (player.diceRoll > player.MoveConstraint)
-			{
-				weight = -10;
-			} 
-			else
-			{
-				weight += 30;
-			}
-		}
+      
 
         //set this pawn in the list of pawns with weight in AIManager
         ai_Manager.SelectPawnToMove(this.gameObject);

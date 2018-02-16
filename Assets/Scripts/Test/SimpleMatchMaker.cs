@@ -11,6 +11,7 @@ public class SimpleMatchMaker : MonoBehaviour
     public Transform scrollTrans;
     public GameObject button;
     public GameObject showCavas;
+
     void Start()
     {
         NetworkManager.singleton.StartMatchMaker();
@@ -21,7 +22,7 @@ public class SimpleMatchMaker : MonoBehaviour
     public void CreateInternetMatch(string matchName)
     {
         NetworkManager.singleton.matchMaker.CreateMatch(matchName, 4, true, "", "", "", 0, 0, OnInternetMatchCreate);
-        PlayerSelection.playerColor = PawnColor.c_Blue;
+        //PlayerSelection.playerColor = PawnColor.c_Blue;
     }
 
     //this method is called when your request for creating a match is returned
@@ -92,7 +93,7 @@ public class SimpleMatchMaker : MonoBehaviour
             }
             MatchInfo hostInfo = matchInfo;
             NetworkManager.singleton.StartClient(hostInfo);
-            PlayerSelection.playerColor = PawnColor.c_Green;
+            //PlayerSelection.playerColor = PawnColor.c_Green;
         }
         else
         {

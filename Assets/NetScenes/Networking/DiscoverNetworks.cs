@@ -33,10 +33,11 @@ public class DiscoverNetworks : NetworkDiscovery
 
 	void OnServerDetected(string add, string data)
 	{
-		print (data);
+		
 		if (onDetectServer != null) {
-			onDetectServer.Invoke (add, data);
-		}
+          onDetectServer.Invoke (add, data);
+            print(data);
+        }
 	}
 
 	public bool InitNetworkDiscovery()
@@ -65,7 +66,14 @@ public class DiscoverNetworks : NetworkDiscovery
 	public void SetBDData(InputField name)
 	{
 		bdData = name.text;
-		broadcastData = bdData;
+        if (NetworkTest.isLAN)
+        {
+            broadcastData = bdData;
+        }
+        else
+        {
+            LobbyManager.tempName = bdData;
+        }
 	}
 
 	public void ReceiveBroadcast()
@@ -76,11 +84,12 @@ public class DiscoverNetworks : NetworkDiscovery
 
         if (!running)
         {
-            Debug.Log("Start listening");
+            
             if (InitNetworkDiscovery())
             {
                 this.StartAsClient();
             }
+            Debug.Log("Start listening");
         }
     }
 
@@ -92,14 +101,15 @@ public class DiscoverNetworks : NetworkDiscovery
 	void OnApplicationQuit()
 	{
 		StopBroadcast ();
-		if (!isClient) {
+
+		if (isServer)
+        {
 			NetworkManager.singleton.StopHost ();
-		} else {
+		}
+        else
+        {
 			NetworkManager.singleton.StopClient ();
 		}
-
-        //NetworkTransport.Shutdown();
-        //NetworkTransport.Init();
     }
 
 }

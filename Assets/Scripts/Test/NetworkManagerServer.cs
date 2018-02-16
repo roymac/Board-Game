@@ -15,6 +15,7 @@ public class NetworkManagerServer : NetworkBehaviour
     public int readycount;
     public PawnColor col;
     public GameObject dice;
+    public GameObject nm;
 
     public bool isPawnMoving;
 
@@ -24,6 +25,7 @@ public class NetworkManagerServer : NetworkBehaviour
         col = PlayerSelection.playerColor;
 
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        nm = GameObject.Find("NetWork Manager");
         //uiManager = GameObject.Find("GameManager").GetComponent<UIManager>();
 
         gm.nm_server = this;
@@ -252,8 +254,12 @@ public class NetworkManagerServer : NetworkBehaviour
         }
         else
         {
+            DiscoverNetworks.Instance.StopBroadcast();
+            NetworkManager.singleton.StopHost();
+
+            Destroy(nm);
+
             GoToMainMenu();
-            //NetworkManager.singleton.StopHost();
         }
     }
 

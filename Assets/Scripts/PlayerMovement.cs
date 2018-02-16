@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
 
     public int MoveConstraint;
 
-    public Material mat;
+    public Material mat,defaultMat;
     public List<MeshRenderer> renderers;
     public ParticleSystem onDeath, onReturn, showCanSelect,onFinish;
 
@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-
+        killedPawnColor = new List<PawnColor>();
         startingRot = transform.GetChild(0).transform.localRotation;
         originalPosition = this.gameObject.transform.position;
         animationChild = transform.GetChild(0).GetChild(1).gameObject;
@@ -121,14 +121,25 @@ public class PlayerMovement : MonoBehaviour
                 {
                     //Networked game, checks if it the players turn;
                     OnMouseDown();
+                    Debug.Log(Time.deltaTime);
                 } 
             }
             else
             {
-                if (gm.currentPlayerTurn == color)
+                if (ControlledByAI)
                 {
-                    Debug.Log("On 3 players Locked");
-                    OnMouseDown();   
+                    return;
+                }
+                else
+                {
+                    if (gm.currentPlayerTurn == color)
+                    {
+                        if (GetComponent<BoxCollider>().enabled)
+                        {
+                            OnMouseDown();  
+                        }
+
+                    }
                 }
             }
         }
@@ -175,6 +186,7 @@ public class PlayerMovement : MonoBehaviour
                     diceRoll = num;
                     animationChild.GetComponent<Animator>().SetBool("animate", true);
                     showCanSelect.Play();
+                    Debug.Log(Time.deltaTime + "\t PLayerCanBeSelected");
                 }
                 else
                 {
@@ -205,6 +217,10 @@ public class PlayerMovement : MonoBehaviour
             if (!isLocked || canUnlock)
             {
                 diceRoll = num;
+                if (MoveConstraint > diceRoll)
+                {
+                    gm.SetLockedPlayers();
+                }
                 GetComponent<PawnAIController>().GetWeight();
 
             }
@@ -218,6 +234,8 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        gm.SetActivePlayerDone();
+
 
     }
 
@@ -227,9 +245,13 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
-        GetComponent<BoxCollider>().enabled = false;
-        animationChild.GetComponent<Animator>().SetBool("animate", false);
-        showCanSelect.Stop();
+
+        if (GetComponent<BoxCollider>().enabled = true)
+        {
+            GetComponent<BoxCollider>().enabled = false;
+            animationChild.GetComponent<Animator>().SetBool("animate", false);
+            showCanSelect.Stop();
+        }
 
         //Statue Achievement Check
         if (color == PlayerSelection.playerColor)
@@ -248,6 +270,7 @@ public class PlayerMovement : MonoBehaviour
                 am.Statue();
             }
         }
+
 
 
     }
@@ -374,7 +397,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isLocked)
         {
-            gm.SetCurrentPlayer(this.gameObject, color);
+            if (gm.currentPlayer == null)
+            {
+                gm.SetCurrentPlayer(this.gameObject, color);
+            }
+
         }
         else
         {
@@ -427,7 +454,6 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator FinalFade(float TimeToFade)
     {
-        Debug.Log("Here");
         for (float i = TimeToFade; i >= TimeToFade/2; i -= Time.deltaTime)
         {
             if (i / TimeToFade < 0.5f)
@@ -439,7 +465,8 @@ public class PlayerMovement : MonoBehaviour
         }
         gm.OnMoveFinished(null);
         GetComponent<PawnAIController>().currentTravelledTiles += diceRoll;
-        GetComponent<MeshRenderer>().enabled = false;
+        renderers[0].enabled = false;
+        renderers[1].enabled = false;
     }
 
     IEnumerator FadeMaterial(bool fadeAway, float TimeToFade)

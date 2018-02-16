@@ -72,8 +72,20 @@ public class GameNetworkServent : NetworkBehaviour
 
         if (playercolor == PlayerSelection.playerColor)
         {
+            if (!isServer)
+            {
+                NetworkManager.singleton.StopClient();
+                Debug.Log("OnDestroy Client Stopped");
+            }
+            else
+            {
+                DiscoverNetworks.Instance.StopBroadcast();
+                NetworkManager.singleton.StopHost();
+                Debug.Log("OnDestroy Host Stopped");
+            }
+
+            Destroy(nm_server.nm);
             nm_server.GoToMainMenu();
-            //NetworkManager.singleton.StopClient();
         }
     }
 }
