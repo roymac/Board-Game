@@ -12,6 +12,6 @@ public class GameDataHolder : MonoBehaviour {
 
 	public PawnColor color;
     public bool isSelected;
-    
 
+    public int playerValue;
 }
