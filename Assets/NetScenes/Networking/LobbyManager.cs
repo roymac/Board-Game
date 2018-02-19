@@ -27,17 +27,23 @@ public class LobbyManager : NetworkBehaviour
     [SyncVar]
     public int selectedBoard;
 
-   // public static List<string> levels;
-
-
     //[SyncVar]
     public List<PlayerStruct> playerDataArray;
 
     //public PlayerSelection playerOptions;
 
     public bool isSelected = false;
+    [SyncVar]
+    public bool p1 = false;
+    [SyncVar]
+    public bool p2 = false;
+    [SyncVar]
+    public bool p3 = false;
+    [SyncVar]
+    public bool p4 = false;
 
-	public static string tempName;
+
+    public static string tempName;
 	public Netmanager ownManager;
 	public int noOfPlayers = 0, isplayerReady = 0;
 	public GameObject startGameBtn;
@@ -116,8 +122,6 @@ public class LobbyManager : NetworkBehaviour
     {
 		playerDataArray = new List<PlayerStruct> ();
 
-
-
 		P1Field = GameObject.Find("P1").GetComponent<InputField>();
 		P2Field = GameObject.Find("P2").GetComponent<InputField>();
 		P3Field = GameObject.Find("P3").GetComponent<InputField>();
@@ -150,74 +154,137 @@ public class LobbyManager : NetworkBehaviour
 
 	}
 
-
-
-
 	public void SelectPlayer(GameObject overlay)
 	{
         if (overlay.transform.GetComponentInParent<GameDataHolder>().isSelected)
         {
             return;
         }
-		if (!isSelected) 
+
+        switch (overlay.transform.GetComponentInParent<GameDataHolder>().playerValue)
         {
-			overlay.SetActive (false);
-           	isSelected = true;
-		}
-	}
+            case 1:
+                if (!p1 && !isSelected)
+                {
+                    if (isServer)
+                    {
+                        p1 = true;
+                    }
+                    else
+                    {
+                        ownManager.CmdSetPlayer(overlay.transform.GetComponentInParent<GameDataHolder>().playerValue);
+                    }
+
+                    isSelected = true;
+                    overlay.SetActive(false);
+                }
+                break;
+            case 2:
+                if (!p2 && !isSelected)
+                {
+                    if (isServer)
+                    {
+                        p2 = true;
+                    }
+                    else
+                    {
+                        ownManager.CmdSetPlayer(overlay.transform.GetComponentInParent<GameDataHolder>().playerValue);
+                    }
+
+                    isSelected = true;
+                    overlay.SetActive(false);
+                } 
+                break;
+            case 3:
+                if (!p3 && !isSelected)
+                {
+                    if (isServer)
+                    {
+                        p3 = true;
+                    }
+                    else
+                    {
+                        ownManager.CmdSetPlayer(overlay.transform.GetComponentInParent<GameDataHolder>().playerValue);
+                    }
+
+                    isSelected = true;
+                    overlay.SetActive(false);
+                }
+                break;
+            case 4:
+                if (!p4 && !isSelected)
+                {
+                    if (isServer)
+                    {
+                        p4 = true;
+                    }
+                    else
+                    {
+                        ownManager.CmdSetPlayer(overlay.transform.GetComponentInParent<GameDataHolder>().playerValue);
+                    }
+
+                    isSelected = true;
+                    overlay.SetActive(false);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
 
 
 
-	public void SetPlayerName(InputField player)
+    public void SetPlayerName(InputField player)
 	{
         PlayerSelection.playerColor = player.gameObject.GetComponent<GameDataHolder>().color;
         switch (player.name)
 		{
 		case "P1":
-            if (isServer) 
-			{
-				playerOneField = player.text;
+                    if (isServer)
+                    {
+                        playerOneField = player.text;
 
-			} 
-			else 
-			{
-				ownManager.CmdSetData_1 (player.text);
-			}
-			Debug.Log (player.text);
+                    }
+                    else
+                    {
+                        ownManager.CmdSetData_1(player.text);
+                    }
+                    Debug.Log(player.text);
+                
 			break;
 
 		case "P2":
-
-			if (isServer) 
-			{
-				playerTwoField = player.text;
-			} 
-			else 
-			{
-				ownManager.CmdSetData_2 (player.text);
-			}
+                    if (isServer)
+                    {
+                        playerTwoField = player.text;
+                    }
+                    else
+                    {
+                        ownManager.CmdSetData_2(player.text);
+                    }
 			break;
 		
 		case "P3":
-			if (isServer) 
-			{
-				playerThreeField = player.text;
-			} 
-			else 
-			{
-				ownManager.CmdSetData_3 (player.text);
-			}
+                    if (isServer)
+                    {
+                        playerThreeField = player.text;
+                    }
+                    else
+                    {
+                        ownManager.CmdSetData_3(player.text);
+                    }
 			break;
 		
 		case "P4":
-			if (isServer) 
-			{
-				playerFourField = player.text;
-			} 
-			else 
-			{
-				ownManager.CmdSetData_4 (player.text);
-			}
+                    if (isServer)
+                    {
+                        playerFourField = player.text;
+                    }
+                    else
+                    {
+                        ownManager.CmdSetData_4(player.text);
+                    }
 			break;			
 
 		default:
@@ -227,7 +294,6 @@ public class LobbyManager : NetworkBehaviour
 
     public void SetPlayers()
     {
-        Debug.Log("Start Mulitplayer game with this board  : " + SelectPlayField.whichBoard);
         if (isServer)
         {
             int boardKey = SelectPlayField.whichBoard;
@@ -266,8 +332,8 @@ public class LobbyManager : NetworkBehaviour
 
 	void OnApplicationQuit()	//This should happen when the player quits the match as well.
 	{
-        DiscoverNetworks.Instance.StopBroadcast();
-        if (!isClient) {
+		//DiscoverNetworks.Instance.StopBroadcast ();
+		if (!isClient) {
 			NetworkManager.singleton.StopHost ();
 		} else {
 			NetworkManager.singleton.StopClient ();
@@ -287,17 +353,7 @@ public class LobbyManager : NetworkBehaviour
     public void RpcShiftScenes()
     {
         Debug.Log(PlayerSelection.playerColor);
-
-        //SceneManager.LoadScene("LudoLevel");
-
-        if (SelectPlayField.whichBoard == 0)
-        {
-            SceneManager.LoadScene("ClassicBoard");
-        }
-        else if (SelectPlayField.whichBoard == 1)
-        {
-            SceneManager.LoadScene("StylisedBoard");
-        }
+        SceneManager.LoadScene("LudoLevel");
     }
 }
 
