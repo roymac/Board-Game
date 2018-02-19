@@ -26,7 +26,6 @@ public class NetworkManagerServer : NetworkBehaviour
 
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         nm = GameObject.Find("NetWork Manager");
-        //uiManager = GameObject.Find("GameManager").GetComponent<UIManager>();
 
         gm.nm_server = this;
 
@@ -35,6 +34,7 @@ public class NetworkManagerServer : NetworkBehaviour
 
     void Start()
     {
+
         servent = GameObject.FindGameObjectsWithTag("NetworkManager");
 
         for (int i = 0; i < servent.Length; i++)
@@ -43,10 +43,10 @@ public class NetworkManagerServer : NetworkBehaviour
             {
                 ownServent = servent[i].GetComponent<GameNetworkServent>();
                 ownServent.nm_server = this;
-                break;
+                //break;
             }
 
-            if (isServer)
+            //if (isServer)
             {
                 servent[i].GetComponent<GameNetworkServent>().nm_server = this;
             }
@@ -196,75 +196,35 @@ public class NetworkManagerServer : NetworkBehaviour
 
     public void OnDropConnection(PawnColor col)
     {
-        if (gm.currentPlayerTurn == col)
-        {
-            SetNextTurn();
-        }
-
-        if (isServer)
-        {
-            RpcPawnOnConnectionDrop(col);
-            RpcDestroyPawnOnConnectionDrop(col);
-        }
-    }
-
-    [ClientRpc]
-    public void RpcPawnOnConnectionDrop(PawnColor color)
-    {
-        Debug.Log(color + " has been Disconnected");
-
-        if (gm.totalPlayers.Contains(color))
-        {
-            for (int i = 0; i < gm.totalPlayers.Count; i++)
-            {
-                if (gm.totalPlayers[i] == color)
-                {
-                    PlayerSelection.playerInfo.Remove(PlayerSelection.playerInfo[i]);
-                    gm.totalPlayers.Remove(gm.totalPlayers[i]);
-                    gm.playerNames.Remove(gm.playerNames[i]);
-                    break;
-                }
-            }
-        }
-    }
-
-    [ClientRpc]
-    public void RpcDestroyPawnOnConnectionDrop(PawnColor color)
-    {
-        switch (color)
+        int indexOfColor = gm.totalPlayers.IndexOf(col);
+        gm.totalPlayers.Remove(col);
+        gm.playerNames.RemoveAt(indexOfColor);
+        switch (col)
         {
             case PawnColor.c_Blue:
                 gm.BlueGameObject.SetActive(false);
                 break;
-            case PawnColor.c_Red:
-                gm.RedGameObject.SetActive(false);
-                break;
             case PawnColor.c_Green:
                 gm.GreenGameObject.SetActive(false);
+                break;
+            case PawnColor.c_Red:
+                gm.RedGameObject.SetActive(false);
                 break;
             case PawnColor.c_Yellow:
                 gm.YellowGameObject.SetActive(false);
                 break;
         }
-
-
-        if (gm.totalPlayers.Count >= 2)
+        if (gm.currentPlayerTurn == col)
         {
-            return;
+            SetNextTurn();
         }
-        else
+
+        if (gm.totalPlayers.Count < 2)
         {
-            DiscoverNetworks.Instance.StopBroadcast();
-            NetworkManager.singleton.StopHost();
-
-            Destroy(nm);
-
-            GoToMainMenu();
+            SceneManager.LoadScene(0);
         }
+
     }
 
-    public void GoToMainMenu()
-    {
-        SceneManager.LoadScene("LudoMenu");
-    }
+
 }

@@ -105,11 +105,17 @@ public class DiscoverNetworks : NetworkDiscovery
 		if (isServer)
         {
 			NetworkManager.singleton.StopHost ();
-		}
+
+            if (!NetworkTest.isLAN)
+                NetworkManager.singleton.StopMatchMaker();
+        }
         else
         {
 			NetworkManager.singleton.StopClient ();
-		}
+
+            if (!NetworkTest.isLAN)
+                NetworkManager.singleton.StopMatchMaker();
+        }
     }
 
 }

@@ -41,12 +41,12 @@ public class UIScript : MonoBehaviour
 
     public static void StartGame()
     {
-        SceneManager.LoadScene("LudoLevel");
+        SceneManager.LoadScene(SelectPlayField.whichLevel);
     }
 
     public void StartTheGame()
     {
-        SceneManager.LoadScene("LudoLevel");
+        SceneManager.LoadScene(SelectPlayField.whichLevel);
     }
 
     public void ExitGame()
@@ -56,6 +56,8 @@ public class UIScript : MonoBehaviour
         SceneManager.LoadScene("LudoMenu");
         PlayerSelection.playerInfo.Clear();
         PlayerSelection.playerColor = PawnColor.c_null;
+
+
 
     }
 

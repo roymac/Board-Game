@@ -27,7 +27,7 @@ public class LobbyManager : NetworkBehaviour
     [SyncVar]
     public int selectedBoard;
 
-
+   // public static List<string> levels;
 
 
     //[SyncVar]
@@ -227,6 +227,7 @@ public class LobbyManager : NetworkBehaviour
 
     public void SetPlayers()
     {
+        Debug.Log("Start Mulitplayer game with this board  : " + SelectPlayField.whichBoard);
         if (isServer)
         {
             int boardKey = SelectPlayField.whichBoard;
@@ -265,8 +266,8 @@ public class LobbyManager : NetworkBehaviour
 
 	void OnApplicationQuit()	//This should happen when the player quits the match as well.
 	{
-		//DiscoverNetworks.Instance.StopBroadcast ();
-		if (!isClient) {
+        DiscoverNetworks.Instance.StopBroadcast();
+        if (!isClient) {
 			NetworkManager.singleton.StopHost ();
 		} else {
 			NetworkManager.singleton.StopClient ();
@@ -286,7 +287,17 @@ public class LobbyManager : NetworkBehaviour
     public void RpcShiftScenes()
     {
         Debug.Log(PlayerSelection.playerColor);
-        SceneManager.LoadScene("LudoLevel");
+
+        //SceneManager.LoadScene("LudoLevel");
+
+        if (SelectPlayField.whichBoard == 0)
+        {
+            SceneManager.LoadScene("ClassicBoard");
+        }
+        else if (SelectPlayField.whichBoard == 1)
+        {
+            SceneManager.LoadScene("StylisedBoard");
+        }
     }
 }
 

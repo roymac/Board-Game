@@ -8,10 +8,14 @@ public class SelectPlayField : MonoBehaviour {
     public static int whichBoard;
     public LobbyManager lm;
 
+    public List<string> levels;
+    public static string whichLevel;
+
 	// Use this for initialization
 	void Start () 
     {
         whichBoard = 0;
+        whichLevel = levels[whichBoard];
 	}
 	
 	// Update is called once per frame
@@ -23,6 +27,7 @@ public class SelectPlayField : MonoBehaviour {
     public void SelectThisBoard(int thisBoard)
     {
         whichBoard = thisBoard;
+        whichLevel = levels[whichBoard];
                    
         //boardImgOverlays[thisBoard].SetActive(true);
         if (thisBoard == 0)
