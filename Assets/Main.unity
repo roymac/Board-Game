@@ -1180,6 +1180,9 @@ MonoBehaviour:
   - {fileID: 554464252}
   - {fileID: 2001050588}
   lm: {fileID: 0}
+  levels:
+  - ClassicBoard
+  - StylisedBoard
 --- !u!1001 &1001943224
 Prefab:
   m_ObjectHideFlags: 0

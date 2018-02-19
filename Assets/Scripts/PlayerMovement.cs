@@ -49,7 +49,8 @@ public class PlayerMovement : MonoBehaviour
         for (int i = 0; i < animationChild.transform.parent.childCount; i++)
         {
             renderers.Add(animationChild.transform.parent.GetChild(i).GetComponent<MeshRenderer>());
-            renderers[i].material = mat;
+          //  renderers[i].material = mat;
+            //renderers[i + 1].material = defaultMat;
         }
         StartingBlock = target;
         showCanSelect = transform.GetChild(1).GetComponent<ParticleSystem>();

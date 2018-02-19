@@ -9,12 +9,15 @@ public class GameNetworkServent : NetworkBehaviour
     [SyncVar]
     public PawnColor playercolor;
 
+    public PawnColor StoreColor;
+
     public NetworkManagerServer nm_server;
     public GameManager gm;
 
 	void Start () 
     {
-
+        if(StoreColor == PawnColor.c_null)
+        StoreColor = PlayerSelection.playerColor;
     }
 
     public void SetColor()
@@ -65,27 +68,14 @@ public class GameNetworkServent : NetworkBehaviour
 
     void OnDestroy()
     {
-        if (nm_server != null)
+        if (SceneManager.GetActiveScene().buildIndex > 2)
         {
             nm_server.OnDropConnection(playercolor);
         }
-
-        if (playercolor == PlayerSelection.playerColor)
+        else
         {
-            if (!isServer)
-            {
-                NetworkManager.singleton.StopClient();
-                Debug.Log("OnDestroy Client Stopped");
-            }
-            else
-            {
-                DiscoverNetworks.Instance.StopBroadcast();
-                NetworkManager.singleton.StopHost();
-                Debug.Log("OnDestroy Host Stopped");
-            }
-
-            Destroy(nm_server.nm);
-            nm_server.GoToMainMenu();
+            //if(DiscoverNetworks.Instance != null)
+            //DiscoverNetworks.Instance.DestroyInsitance();
         }
     }
 }

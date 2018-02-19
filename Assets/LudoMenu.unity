@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657868, g: 0.4964127, b: 0.57481724, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -922,6 +922,9 @@ MonoBehaviour:
   - {fileID: 1860793974}
   - {fileID: 1926426322}
   lm: {fileID: 0}
+  levels:
+  - ClassicBoard
+  - StylisedBoard
 --- !u!114 &198089239
 MonoBehaviour:
   m_ObjectHideFlags: 0

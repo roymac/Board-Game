@@ -19,13 +19,13 @@ public class NetworkTest : MonoBehaviour {
 
 	public InputField serverName;
 	public string nameData;
-
-
     //method to differentiate between lan and online
  
 
 	void Start ()
-    {}
+    {
+        
+    }
 	
 	void Update ()
     {
@@ -62,7 +62,8 @@ public class NetworkTest : MonoBehaviour {
 	{
         Debug.Log ("started as host");
 		serverSetup.SetActive (false);
-
+        DiscoverNetworks.Instance.StopBroadcast();
+        NetworkServer.Reset();
         if (isLAN)
         {
             Debug.Log("LAN SHIT : ");
@@ -97,7 +98,8 @@ public class NetworkTest : MonoBehaviour {
 	{
         hostList.SetActive(false);
 		print(ip.GetComponent<GameDataHolder>().ip);
-
+        //Network.Disconnect();
+        //NetworkServer.Reset();
         NetworkManager.singleton.networkAddress = ip.GetComponent<GameDataHolder>().ip;
         NetworkManager.singleton.StartClient ();
 
@@ -153,6 +155,7 @@ public class NetworkTest : MonoBehaviour {
     //this method is called when your request for creating a match is returned
     private void OnInternetMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
     {
+        Debug.Log("returned request");
         if (success)
         {
             //Debug.Log("Create match succeeded");
@@ -200,10 +203,6 @@ public class NetworkTest : MonoBehaviour {
 
                 //StartCoroutine(joinMatch(matches));
             }
-            else
-            {
-                CreateInternetMatch("Match" + Time.time);
-            }
         }
         else
         {
@@ -235,6 +234,7 @@ public class NetworkTest : MonoBehaviour {
 
     void joinMatch(MatchInfoSnapshot matches)
     {
+        Debug.Log(matches.networkId);
       //  yield return new WaitForSeconds(2f);
         //  NetworkManager.singleton.matchMaker.JoinMatch(matches[0].networkId, "", "", "", 0, 0, OnJoinInternetMatch);
         NetworkManager.singleton.matchMaker.JoinMatch(matches.networkId, "", "", "", 0, 0, OnJoinInternetMatch);
