@@ -23,7 +23,7 @@ public class SetPlayerInfo : MonoBehaviour {
 
 	public void SetPlayerData(int index)
 	{
-        print(UIScript.isVersusBot);
+ 	        print(UIScript.isVersusBot);
         if (!UIScript.isVersusBot)
         {
             data.name = this.GetComponent<InputField>().text;

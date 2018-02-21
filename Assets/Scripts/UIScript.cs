@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class UIScript : MonoBehaviour
 {
 
-    public Animator mainMenuAnim;
+    public Animator mainMenuAnim, settingsAnimator;
 
     public GameObject pauseMenu, mainMenu, gameoverMenu, pauseButton, noofPlayerScreen, playerSelectScene, gameModeScreen, MultiplayerMode, OfflineOnlineMode;
     public Text GameOverText;
@@ -22,7 +22,7 @@ public class UIScript : MonoBehaviour
     void Start()
     {
         if(mainMenu != null)
-            mainMenu.SetActive(true);
+           // mainMenu.SetActive(true);
 
         if (MultiplayerMode != null)
             MultiplayerMode.SetActive(true);
@@ -104,10 +104,11 @@ public class UIScript : MonoBehaviour
         gameModeScreen.SetActive(true);
     }
 
-    public void OpenMultiplayerModeScreen()
+	public void OpenMultiplayerModeScreen(bool isLAN)
     {
         PlayerSelection.isNetworkedGame = true;
         SceneManager.LoadScene("Main");
+		NetworkTest.isLAN = isLAN;
     }
     
     public void SetNetworkMode(bool value)
@@ -116,4 +117,5 @@ public class UIScript : MonoBehaviour
         MultiplayerMode.SetActive(false);
         OfflineOnlineMode.SetActive(true);
     }
+
 }
