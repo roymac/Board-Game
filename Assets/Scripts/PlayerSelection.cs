@@ -51,9 +51,9 @@ public class PlayerSelection : MonoBehaviour
         {
             names[i].SetActive(true);
             playerInfo.Add(playerData);
-            if (UIScript.isVersusBot)
+            if (!UIScript.isVersusBot)
             {
-                overlays[i].SetActive(true);
+				overlays[i].SetActive(false);
             }
         }
       

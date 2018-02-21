@@ -8,4 +8,5 @@ Library
 *.unityproj
 *.Editor
 *.Plugins
+*.apk
 UnityPackageManager

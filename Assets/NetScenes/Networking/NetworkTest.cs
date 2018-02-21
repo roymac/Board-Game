@@ -24,7 +24,7 @@ public class NetworkTest : MonoBehaviour {
 
 	void Start ()
     {
-        
+		SetMultiplayerMode (isLAN);
     }
 	
 	void Update ()
@@ -33,16 +33,17 @@ public class NetworkTest : MonoBehaviour {
 	}
     public void SetMultiplayerMode(bool isOffline)
     {
-        isLAN = isOffline;
+        //isLAN = isOffline;
+		Debug.Log("IS lan game : " + isOffline);
         mpModeObj.SetActive(false);
         menuObj.SetActive(true);
 
-        if (!isLAN)
+		if (!isOffline)
         {
             NetworkManager.singleton.StartMatchMaker();
             PlayerSelection.isNetworkedGame = true;
         }
-        else if (isLAN)
+		else if (isOffline)
         {
             Debug.Log("Hooked offline mp event");
             DiscoverNetworks.Instance.onDetectServer += ReceivedBroadcast;
