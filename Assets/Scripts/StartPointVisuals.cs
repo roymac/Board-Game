@@ -12,59 +12,25 @@ public class StartPointVisuals : MonoBehaviour
 	void Start () 
     {
         mat = GetComponent<MeshRenderer>().material;
-        mat.SetFloat("_EmissionStrength", 10);
-        switch (col)
-        {
-            case PawnColor.c_Blue:
-                EventManager.UnlockBluePawns += ShowUnlockAnimation;
-                break;
-            case PawnColor.c_Red:
-                EventManager.UnlockRedPawns += ShowUnlockAnimation;
-                break;
-            case PawnColor.c_Yellow:
-                EventManager.UnlockYellowPawns += ShowUnlockAnimation;
-                break;
-            case PawnColor.c_Green:
-                EventManager.UnlockGreenPawns += ShowUnlockAnimation;
-                break;
-        }
-        EventManager.onSelected += OnPlayerSelect;
+        mat.SetFloat("_EmissionStrength", 0);
 	}
 
     void OnDestroy()
     {
-        switch (col)
-        {
-            case PawnColor.c_Blue:
-                EventManager.UnlockBluePawns -= ShowUnlockAnimation;
-                break;
-            case PawnColor.c_Red:
-                EventManager.UnlockRedPawns -= ShowUnlockAnimation;
-                break;
-            case PawnColor.c_Yellow:
-                EventManager.UnlockYellowPawns -= ShowUnlockAnimation;
-                break;
-            case PawnColor.c_Green:
-                EventManager.UnlockGreenPawns -= ShowUnlockAnimation;
-                break;
-        }
-        EventManager.onSelected -= OnPlayerSelect;
     }
 
-    void ShowUnlockAnimation(int num)
+    public void ShowSelectableAnimation()
     {
         if (canChangeMat)
         {
-            StartCoroutine(FadeInOut(2f,false));
-            //Debug.Log("Called" + gameObject.name);  
+            StartCoroutine(FadeInOut(2f,false)); 
         }
 
     }
 
-    void OnPlayerSelect()
+    public void StopSelectableAnimation()
     {
         StopAllCoroutines();
-        //Debug.Log("Called" + gameObject.name);
     }
 
     IEnumerator FadeInOut(float TimeToFade, bool isFadeIn)
@@ -73,8 +39,7 @@ public class StartPointVisuals : MonoBehaviour
         {
             for (float i = TimeToFade; i >= 0; i -= Time.deltaTime * animespeed )
             {
-                mat.SetFloat("_EmissionStrength", (i / TimeToFade) * 10);
-                //Debug.Log(mat.GetFloat("_EmissionStrength"));
+                mat.SetFloat("_EmissionStrength", (i / TimeToFade) *3);
                 yield return null;
             }
             StartCoroutine(FadeInOut(TimeToFade, true));
@@ -83,8 +48,7 @@ public class StartPointVisuals : MonoBehaviour
         {
             for (float i = 0 ; i <= TimeToFade; i += Time.deltaTime * animespeed)
             {
-                mat.SetFloat("_EmissionStrength", (i / TimeToFade)*10);
-                //Debug.Log(mat.GetFloat("_EmissionStrength"));
+                mat.SetFloat("_EmissionStrength", (i / TimeToFade)*3);
                 yield return null;
             } 
             StartCoroutine(FadeInOut(TimeToFade, false));

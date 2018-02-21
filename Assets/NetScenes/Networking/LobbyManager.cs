@@ -353,7 +353,7 @@ public class LobbyManager : NetworkBehaviour
     public void RpcShiftScenes()
     {
         Debug.Log(PlayerSelection.playerColor);
-        SceneManager.LoadScene("LudoLevel");
+        SceneManager.LoadScene("StylisedBoard");
     }
 }
 

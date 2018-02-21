@@ -46,11 +46,11 @@ public class PlayerMovement : MonoBehaviour
         originalPosition = this.gameObject.transform.position;
         animationChild = transform.GetChild(0).GetChild(1).gameObject;
         mat.enableInstancing = true;
+        if(defaultMat != null)
+        defaultMat.enableInstancing = true;
         for (int i = 0; i < animationChild.transform.parent.childCount; i++)
         {
             renderers.Add(animationChild.transform.parent.GetChild(i).GetComponent<MeshRenderer>());
-          //  renderers[i].material = mat;
-            //renderers[i + 1].material = defaultMat;
         }
         StartingBlock = target;
         showCanSelect = transform.GetChild(1).GetComponent<ParticleSystem>();
@@ -221,8 +221,13 @@ public class PlayerMovement : MonoBehaviour
                 if (MoveConstraint > diceRoll)
                 {
                     gm.SetLockedPlayers();
+                    GetComponent<PawnAIController>().GetWeight();
                 }
-                GetComponent<PawnAIController>().GetWeight();
+                else
+                {
+                    GetComponent<PawnAIController>().GetWeight();
+                }
+
 
             }
             else
@@ -252,28 +257,29 @@ public class PlayerMovement : MonoBehaviour
             GetComponent<BoxCollider>().enabled = false;
             animationChild.GetComponent<Animator>().SetBool("animate", false);
             showCanSelect.Stop();
+
+            if (gm.currentPlayer == this.gameObject)
+            {
+                //Statue Achievement Check
+                if (color == PlayerSelection.playerColor)
+                {
+                    if (gm.currentPlayer != this.gameObject)
+                    {
+                        statueCount++;
+                    }
+                    else
+                    {
+                        statueCount = 0;
+                    }
+
+                    if (statueCount == 10)
+                    {
+                        am.Statue();
+                    }
+                }
+            }
+
         }
-
-        //Statue Achievement Check
-        if (color == PlayerSelection.playerColor)
-        {
-            if (gm.currentPlayer != this.gameObject)
-            {
-                statueCount++;
-            }
-            else
-            {
-                statueCount = 0;
-            }
-
-            if (statueCount == 10)
-            {
-                am.Statue();
-            }
-        }
-
-
-
     }
 	
 	// Update is called once per frame
@@ -462,9 +468,11 @@ public class PlayerMovement : MonoBehaviour
                 break;
             }
             mat.SetFloat("_Progress", i/TimeToFade );
+            if(defaultMat != null)
+            defaultMat.SetFloat("_Progress", i/TimeToFade );
             yield return null;
         }
-        gm.OnMoveFinished(null);
+        gm.OnMoveFinished(this.gameObject);
         GetComponent<PawnAIController>().currentTravelledTiles += diceRoll;
         renderers[0].enabled = false;
         renderers[1].enabled = false;
@@ -485,6 +493,8 @@ public class PlayerMovement : MonoBehaviour
                     break;
                 }
                 mat.SetFloat("_Progress", i/TimeToFade );
+                if(defaultMat != null)
+                defaultMat.SetFloat("_Progress", i/TimeToFade );
                 yield return null;
             }
             transform.position = originalPosition;
@@ -502,6 +512,8 @@ public class PlayerMovement : MonoBehaviour
                     break;
                 }
                 mat.SetFloat("_Progress", i/TimeToFade);
+                if(defaultMat != null)
+                defaultMat.SetFloat("_Progress", i/TimeToFade );
                 yield return null;
             }
         }

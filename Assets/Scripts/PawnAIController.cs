@@ -63,6 +63,7 @@ public class PawnAIController : MonoBehaviour
                
             }
         }
+            
 
         //if there is anyone within a dice roll away from the pawn, add 100 to the weight.
         WaypointScript point = player.target.GetComponent<WaypointScript>().PreviousPoint.GetComponent<WaypointScript>();
@@ -77,16 +78,17 @@ public class PawnAIController : MonoBehaviour
                 {
                     //if it not the same as current pawn, increase weight of this pawn 100
                     weight += 100 * i;
+                    if(showDebug)
+                        Debug.Log("Being Chased" + gameObject.name + weight);
                 }
-                if(showDebug)
-                Debug.Log("Being Chased" + gameObject.name + weight);
+               
             }
             //get the tile before the current tile
             point = point.PreviousPoint.GetComponent<WaypointScript>();
         }
        
         //else, if there is a chance to knock out an enemy within a certain distance, add 10 to the weight
-        point = player.target.GetComponent<WaypointScript>().nextPoint[0].GetComponent<WaypointScript>();
+        point = player.target.GetComponent<WaypointScript>();//.nextPoint[0].GetComponent<WaypointScript>();
         int placeToKnockDown = 0;
         //check for X number of squares, where X is ChaseDistance
         for (int i = 0; i < ChaseDistance; i++)
@@ -94,33 +96,43 @@ public class PawnAIController : MonoBehaviour
             //check if there are any players in the current square
             if (point.playerInBox.Count > 0)
             {
+                Debug.Log(point.playerInBox[0].GetComponent<PlayerMovement>().color);
                 //check if the player present is of the same type as this player
-                if (point.playerInBox[0].GetComponent<PlayerMovement>().color != GetComponent<PlayerMovement>().color)
-                {
+                if (point.playerInBox[0].GetComponent<PlayerMovement>().color != GetComponent<PlayerMovement>().color && !point.isSafeBox)
+                { 
                     //save the position of the square
                     placeToKnockDown = i;
+                    Debug.Log("Found enemy in " + placeToKnockDown);
                     //check if the dice roll is higher than where the players are located, if it is lower, or the diceroll is a six, then add weight according to the number of pawns present
-                    if (player.diceRoll - 1 <= placeToKnockDown && !point.isSafeBox || player.canUnlock)
+                    if (player.diceRoll <= placeToKnockDown && !point.isSafeBox || player.canUnlock)
                     {
                         //number of players present in the target box
                         for (int j = 0; j < point.playerInBox.Count; j++)
                         {
                             //increase weight by 25
-                            weight += 25; 
+                            weight += 150; 
                         }
-                        if(showDebug)
-                        Debug.Log("Chasing" + gameObject.name + weight);
+                        if (showDebug)
+                            Debug.Log("Chasing" + gameObject.name + weight);
                     }
                     else
                     {
                         //decrease the weight of this as it will have a higher chance of dying if moved ahead of an opposition
-                        if(showDebug)
-                        Debug.Log("Will be eaten if chased"+ gameObject.name + weight);
                         weight = -10;
+                        if (showDebug)
+                            Debug.Log("Will be eaten if chased" + gameObject.name + weight);
                         //weight = Mathf.Clamp(weight, 0, 999999);
                        
                     }
                     break;
+                }
+                else
+                {
+                    if (point.nextPoint[0] == null)
+                    {
+                        break;          
+                    }
+                    point = point.nextPoint[0].GetComponent<WaypointScript>();
                 }
             }
             //if no enemy was found

@@ -10,7 +10,7 @@ Material:
   m_Shader: {fileID: 4800000, guid: 3e7899f24eae03e43910c579b8481df4, type: 3}
   m_ShaderKeywords: EDGE_COLOR PHONG_ON
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -100,7 +100,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Phong: 1
-    - _Progress: 1
+    - _Progress: 0.5030008
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SpecularPower: 0

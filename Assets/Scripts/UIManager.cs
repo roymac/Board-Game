@@ -15,6 +15,8 @@ public class UIManager : MonoBehaviour
     public ParticleSystem diceParticle;
     public GameObject DiceFeedbackAnimationObject;
     public Image LoadingScreen;
+
+    public StartPointVisuals Red, Blue, Green, Yellow;
 	// Use this for initialization
 	void Start () 
     {
@@ -71,18 +73,35 @@ public class UIManager : MonoBehaviour
             case PawnColor.c_Blue:
                 showTurn.text = (name == null || name == "") ? "Blues Turn" : name + " Turn";
                 showTurn.color = Color.blue;
+                Blue.ShowSelectableAnimation();
+                Red.StopSelectableAnimation();
+                Yellow.StopSelectableAnimation();
+                Green.StopSelectableAnimation();
+
                 break;
             case PawnColor.c_Red:
                 showTurn.text = (name == null || name == "") ? "Reds Turn" : name + " Turn";
                 showTurn.color = Color.red;
+                Blue.StopSelectableAnimation();
+                Red.ShowSelectableAnimation();
+                Yellow.StopSelectableAnimation();
+                Green.StopSelectableAnimation();
                 break;
             case PawnColor.c_Yellow:
                 showTurn.text = (name == null || name == "") ? "Yellows Turn" : name + " Turn";
                 showTurn.color = Color.yellow;
+                Blue.StopSelectableAnimation();
+                Red.StopSelectableAnimation();
+                Yellow.ShowSelectableAnimation();
+                Green.StopSelectableAnimation();
                 break;
             case PawnColor.c_Green:
                 showTurn.text = (name == null || name == "") ? "Greens Turn" : name + " Turn";
                 showTurn.color = Color.green;
+                Blue.StopSelectableAnimation();
+                Red.StopSelectableAnimation();
+                Yellow.StopSelectableAnimation();
+                Green.ShowSelectableAnimation();
                 break;
         }
     }
