@@ -23,8 +23,9 @@ public class DiceThrow : MonoBehaviour
         GetComponent<Animator>().speed = 0;
         currentEventCount = -1;
         //diceObject = transform.GetComponent<Rigidbody>();
-        SetDiceFaceValues(); 
-        //diceObject.maxAngularVelocity = 90000000000;
+        SetDiceFaceValues();
+        //diceObject.maxAngularVelocity = 90000000000;'
+        GetComponent<MeshRenderer>().material.SetFloat("_Progress", 0);
     }
 
     void Start()
@@ -81,9 +82,17 @@ public class DiceThrow : MonoBehaviour
             {
                 GetComponent<Animator>().speed = 0;
                 currentEventCount = 0;
-                gm.SetDiceVale(framveValues[num]);
+                //gm.SetDiceVale(framveValues[num]);
+                StartCoroutine(setDie(framveValues[num]));
             }
         }
+    }
+
+    IEnumerator setDie(int val)
+    {
+        gm.UIDiceValueShowOnRollStop(val);
+        yield return new WaitForSeconds(0.5f);
+        gm.SetDiceVale(val);
     }
 
     public void ThrowDice()
@@ -151,7 +160,7 @@ public class DiceThrow : MonoBehaviour
         if (fadeAway)
         {
             yield return new WaitForSeconds(0.8f);
-            for (float i = TimeToFade; i >= 0.3f; i -= Time.deltaTime)
+            for (float i = TimeToFade; i >= 0.2f; i -= Time.deltaTime)
             {
                 mat.SetFloat("_Progress", i/TimeToFade );
                 yield return null;
@@ -163,7 +172,7 @@ public class DiceThrow : MonoBehaviour
         {
             if (mat.GetFloat("_Progress") < 1)
             {
-                for (float i = 0.3f ; i <= TimeToFade; i += Time.deltaTime)
+                for (float i = 0.2f ; i <= TimeToFade; i += Time.deltaTime)
                 {
                     mat.SetFloat("_Progress", i/TimeToFade);
                     yield return null;

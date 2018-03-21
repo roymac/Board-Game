@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(AudioSource))]
@@ -24,13 +25,14 @@ public class AudioManager : MonoBehaviour
 
     public int songNumber = 0;
 
-    public bool mute = false;
+    public static bool mute = false;
     public bool dontDestroyOnLoad = false;
 
     public static AudioManager Instance = null;
 
     void Awake ()
     {
+        SceneManager.sceneLoaded += SceneLoad;
         if (Instance == null)
         {
             Instance = this;
@@ -44,10 +46,27 @@ public class AudioManager : MonoBehaviour
         if (dontDestroyOnLoad)
             DontDestroyOnLoad(this.gameObject);
     }
-	
-	void Start ()
+
+    void SceneLoad(Scene scene, LoadSceneMode mode)
     {
+        pawnAudioSource1.Stop();
+        pawnAudioSource2.Stop();
+        pawnAudioSource1.loop = false;
+        pawnAudioSource2.loop = false;
+    }
+
+
+    void Start ()
+    {
+        Debug.Log("Playing on start");
+        songNumber = 0;
         PlayBGMusic(songNumber);
+		if (PlayerPrefs.HasKey ("MuteAudio"))
+		{
+			print ("Audio Setting : " + PlayerPrefs.GetInt("MuteAudio"));
+			mute = (PlayerPrefs.GetInt ("MuteAudio") == 1);
+		}
+		MuteAudioSources (mute);
     }
 
     private void Update()
@@ -55,8 +74,9 @@ public class AudioManager : MonoBehaviour
         //MuteAudioSources();
     }
 
-    void MuteAudioSources()
+	public void MuteAudioSources(bool mute)
     {
+		//print ("Time to mute stuff : " + mute);
         if (mute)
         {
             BGSource.volume = 0;
@@ -65,7 +85,7 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            BGSource.volume = 0.1f;
+            BGSource.volume = 0.6f;
             pawnAudioSource1.volume = 1f;
             pawnAudioSource2.volume = 1f;
         }
@@ -112,14 +132,14 @@ public class AudioManager : MonoBehaviour
         if (value)
         {
             pawnAudioSource1.Stop();
-            pawnAudioSource1.loop = true;
+           // pawnAudioSource1.loop = true;
             pawnAudioSource1.clip = pawnMovement;
             pawnAudioSource1.Play();
         }
         else
         {
             pawnAudioSource1.Stop();
-            pawnAudioSource1.loop = false;
+           // pawnAudioSource1.loop = false;
         }
     }
 
@@ -146,5 +166,10 @@ public class AudioManager : MonoBehaviour
     public void UIClick()
     {
         PlayInAudioSource1(clickUI);
+    }
+
+    public void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= SceneLoad;
     }
 }

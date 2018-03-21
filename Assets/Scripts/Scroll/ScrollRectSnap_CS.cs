@@ -14,24 +14,27 @@ public class ScrollRectSnap_CS : MonoBehaviour
 	public int minItemNum;	// To hold the number of the button, with smallest distance to center
 	public int itemLength;
 
-	void Start()
+    public float lerpSpeed;
+    float minDistance;
+
+    void Start()
 	{
 		itemLength = item.Length;
 		distance = new float[itemLength];
 
 		// Get distance between buttons
-		itemDistance  = (int)Mathf.Abs(item[1].GetComponent<RectTransform>().anchoredPosition.x - item[0].GetComponent<RectTransform>().anchoredPosition.x);
+		itemDistance  = (int)Mathf.Abs(item[1].GetComponent<RectTransform>().anchoredPosition.y - item[0].GetComponent<RectTransform>().anchoredPosition.y);
 	}
 
 	void Update()
 	{
 		for (int i = 0; i < item.Length; i++)
 		{
-			float dist = center.GetComponent<RectTransform>().position.y - item[i].GetComponent<RectTransform>().position.y;
+			float dist = center.GetComponent<RectTransform>().position.x - item[i].GetComponent<RectTransform>().position.x;
 			distance[i] = Mathf.Abs(dist);
 		}
 	
-		float minDistance = Mathf.Min(distance);	// Get the min distance
+		minDistance = Mathf.Min(distance);	// Get the min distance
 
 		for (int a = 0; a < item.Length; a++)
 		{
@@ -41,30 +44,31 @@ public class ScrollRectSnap_CS : MonoBehaviour
 			}
 		}
 
-		if (!dragging)
-		{
-			//LerpToitem(minButtonNum * -itemDistance);
-			LerpToitem (-item[minItemNum].GetComponent<RectTransform>().anchoredPosition.y);
-		}
-	}
+        if (minDistance <= 450f)
+        {
+            //LerpToitem(minButtonNum * -itemDistance);
+            LerpToitem(-item[minItemNum].GetComponent<RectTransform>().anchoredPosition.x);
+        }
+
+    }   
 
 	void LerpToitem(float position)
 	{
-		float newX = Mathf.Lerp (panel.anchoredPosition.y, position, Time.deltaTime * 5f);
-		Vector2 newPosition = new Vector2 (panel.anchoredPosition.x, newX);
+		float newX = Mathf.Lerp (panel.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
+		Vector2 newPosition = new Vector2 (newX, panel.anchoredPosition.y);
 
 		panel.anchoredPosition = newPosition;
 	}
 
-	public void StartDrag()
+	public void OnMouseDown()
 	{
 		dragging = true;
-	}
+    }
 
-	public void EndDrag()
+	public void OnMouseUp()
 	{
 		dragging = false;
-	}
+    }
 
 }
 	

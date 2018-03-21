@@ -4,17 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ItemManager : MonoBehaviour {
-
+	
 	public bool hasBought;
 	public int Price; 
 
-	public GameObject overlay, detailsText, board;
+	public GameObject overlay, detailsText, board, selectButton;
 	//public string lockedColor, unclockedColor;
 
 	public Text priceText;
 
 	public string PlayerprefKey;
 
+    public int boardIndex;
 
 
 	void Start()
@@ -43,7 +44,10 @@ public class ItemManager : MonoBehaviour {
 		this.GetComponent<Image> ().color = Color.white;
 		if (overlay != null) 
 		{
-			overlay.SetActive (false);
+          //  if (overlay != null)
+            {
+                overlay.SetActive(false);
+            }
 //			if (detailsText != null) {
 //				detailsText.SetActive (false);
 //			}
@@ -54,37 +58,52 @@ public class ItemManager : MonoBehaviour {
 
 	void CheckIfItemWasAlreadyBought()
 	{
-		if (PlayerPrefs.GetInt (PlayerprefKey) == 1)
-		{
-			this.GetComponent<Image> ().color = Color.white;
-			overlay.SetActive (false);
-//			if (detailsText != null) {
-//				detailsText.SetActive (false);
-//			}
-			hasBought = true;
-		}
+        Debug.Log("Checking if item was already bought");
+        if (PlayerPrefs.GetInt(PlayerprefKey) == 1)
+        {
+            this.GetComponent<Image>().color = Color.white;
+            if (overlay != null)
+            {
+                overlay.SetActive(false);
+            }
+//			 
+            hasBought = true;
+        }
+
+        else if(this.gameObject.name!="Classic")
+        {
+            hasBought = false;
+        }
 	}
 
-	void CheckIfCanBuyItem()
+	public void CheckIfCanBuyItem()
 	{
 		Debug.Log ("Checking if item can be bought");
 
-		Debug.Log (PlayerPrefs.GetInt ("NumberOfCoins") + "            " + Price);
+		Debug.Log ("No of Coins :" + PlayerPrefs.GetInt ("NumberOfCoins") + "           Price :" + Price);
 
+        if (!hasBought)
+        {
 
-		if (priceText != null) 
-		{
-			if (PlayerPrefs.GetInt ("NumberOfCoins") > Price)
-			{
-				Debug.Log ("buy");
-				priceText.color = Color.white;
-			}
-			else if(PlayerPrefs.GetInt ("NumberOfCoins") <= Price)
-			{
-				Debug.Log ("no buy");
-				priceText.color = Color.red;
-			}
-		}
+            if (priceText != null)
+            {
+                if (PlayerPrefs.GetInt("NumberOfCoins") >= Price)
+                {
+                    Debug.Log("buy");
+                    priceText.color = Color.white;
+                }
+                else if (PlayerPrefs.GetInt("NumberOfCoins") < Price)
+                {
+                    Debug.Log("no buy");
+                    priceText.color = Color.red;
+                }
+            }
+        }
 	}
+
+    public void CanSelectThisBoard(bool visibility)
+    {
+        selectButton.SetActive(visibility);
+    }
 
 }

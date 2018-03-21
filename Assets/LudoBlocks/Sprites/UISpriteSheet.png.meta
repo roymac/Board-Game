@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: f117372c414746640b418bbaf3600ab6
-timeCreated: 1519125153
-licenseType: Free
+timeCreated: 1519619622
+licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
     21300000: UISpriteSheet_0
@@ -61,6 +61,7 @@ TextureImporter:
     21300108: UISpriteSheet_54
     21300110: UISpriteSheet_55
     21300112: UISpriteSheet_56
+    21300114: UISpriteSheet_57
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -144,14 +145,24 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
   - buildTarget: Android
-    maxTextureSize: 1024
-    resizeAlgorithm: 1
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: 47
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 1
+    androidETC2FallbackOverride: 0
+  - buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
     androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
@@ -273,9 +284,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1369
-        y: 1856
+        y: 1859
         width: 103
-        height: 111
+        height: 108
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -664,10 +675,10 @@ TextureImporter:
       name: UISpriteSheet_36
       rect:
         serializedVersion: 2
-        x: 1731
-        y: 1061
-        width: 167
-        height: 335
+        x: 1729
+        y: 1227
+        width: 169
+        height: 169
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -949,7 +960,21 @@ TextureImporter:
         width: 790
         height: 469
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: UISpriteSheet_57
+      rect:
+        serializedVersion: 2
+        x: 1734
+        y: 1071
+        width: 163
+        height: 146
+      alignment: 9
+      pivot: {x: 0.5000007, y: 0.52289957}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

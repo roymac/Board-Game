@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ShopManager : MonoBehaviour {
 
+	public GameObject[] items;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -18,12 +20,16 @@ public class ShopManager : MonoBehaviour {
 	{
 		Debug.Log ("Checking for purchase");
 
+		AudioManager.Instance.UIClick();
+
 		int currCoins = CoinManager.GetCurrentNumberOfCoins ();
 		int itemPrice = item.GetComponent<ItemManager> ().GetPrice();
 
-		if (itemPrice != -1 && itemPrice <= currCoins) {
+		if (itemPrice != -1 && itemPrice <= currCoins) 
+		{
 			UnlockItem (item, itemPrice);
 		}
+
 		else if (itemPrice == -1) 
 		{
 			Debug.Log ("Item has already been bought");
@@ -39,5 +45,12 @@ public class ShopManager : MonoBehaviour {
 		//Do Something visual to denote purchase.
 		item.GetComponent<ItemManager>().ItemWasBought();
 		CoinManager.DeductCoins(price);
+	}
+
+	public void CanWeBuy()
+	{
+		foreach (var item in items) {
+			item.GetComponent<ItemManager> ().CheckIfCanBuyItem ();
+		}
 	}
 }

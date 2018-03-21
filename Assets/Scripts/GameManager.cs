@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class GameManager : MonoBehaviour 
 {
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
     public PawnColor currentPlayerTurn;
     public int diceRollValue;
     public bool canSelectPlayer;
-    public int redHomeCount, blueHomeCount, greenHomeCount, yellowHomeCount;
+    public int redHomeCount, blueHomeCount, greenHomeCount, yellowHomeCount = -1;
     public int totalFinishCount;
 
     public GameObject RedGameObject, BlueGameObject, YellowGameObject, GreenGameObject,NormalDice,DicePosition;
@@ -26,7 +27,9 @@ public class GameManager : MonoBehaviour
     List<int> DiceValues;
     AchievementsManager am;
     int allActivePlayerCount = 0;
+    public int totalPlayersPlayingCount = 0;
     public int lockedplayers;
+    public List<string> FinishList;
     void Awake()
     {
         
@@ -34,6 +37,7 @@ public class GameManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
+		Debug.Log ("player info : " + PlayerSelection.playerInfo);
         DiceValues = new List<int>();
         am = GetComponent<AchievementsManager>();
         players = GameObject.FindGameObjectsWithTag("Player");
@@ -41,17 +45,18 @@ public class GameManager : MonoBehaviour
         GreenGameObject.SetActive(false);
         RedGameObject.SetActive(false);
         YellowGameObject.SetActive(false);
+        redHomeCount = blueHomeCount = yellowHomeCount = greenHomeCount = -11;
         if (!PlayerSelection.isNetworkedGame)
         {
             GameObject obj = (GameObject)Instantiate(NormalDice, DicePosition.transform.position, Quaternion.identity);
             dice = obj.GetComponent<DiceThrow>();
-            InitializeGame();
+            Invoke("InitializeGame", 1f);
         }
 	}
 
     public void InitializeGame()
     {
-        totalPlayers.Clear();
+		totalPlayers.Clear();
         playerNames.Clear();
         Debug.Log(SelectPlayField.whichBoard);
         mat.mainTexture = boardTexture[SelectPlayField.whichBoard];
@@ -60,7 +65,28 @@ public class GameManager : MonoBehaviour
         {
             totalPlayers.Add(PlayerSelection.playerInfo[i].color);
             playerNames.Add(PlayerSelection.playerInfo[i].name);
+
+			if (playerNames[i] == "" || playerNames[i] == null)
+			{
+				switch (totalPlayers[i])
+				{
+				case PawnColor.c_Blue:
+					playerNames[i] = "Blue";
+					break;
+				case PawnColor.c_Green:
+					playerNames[i] = "Green";
+					break;
+				case PawnColor.c_Red:
+					playerNames[i] = "Red";
+					break;
+				case PawnColor.c_Yellow:
+					playerNames[i] = "Yellow";
+					break;
+				}
+			}
         }
+
+        totalPlayersPlayingCount = totalPlayers.Count;
 
         for (int i = 0; i < totalPlayers.Count; i++)
         {
@@ -68,15 +94,19 @@ public class GameManager : MonoBehaviour
             {
                 case PawnColor.c_Blue:
                     BlueGameObject.SetActive(true);
+                    blueHomeCount = 0;
                     break;
                 case PawnColor.c_Red:
                     RedGameObject.SetActive(true);
+                    redHomeCount = 0;
                     break;
                 case PawnColor.c_Green:
                     GreenGameObject.SetActive(true);
+                    greenHomeCount = 0;
                     break;
                 case PawnColor.c_Yellow:
                     YellowGameObject.SetActive(true);
+                    yellowHomeCount = 0;
                     break;
             }
         }
@@ -101,6 +131,8 @@ public class GameManager : MonoBehaviour
 
         ui_m.RemoveLoadingScreen();
             
+		AnalyticsResult result = Analytics.CustomEvent ("GameStart");
+		print ("game start analytics result : " + result);
     }
 
     public void StartNetworkedTurn(int num)
@@ -202,8 +234,9 @@ public class GameManager : MonoBehaviour
             {
                 if (lockedplayers == 4)
                 {
-                    SetNextTurn();
-                    EventManager.PlayerSelected();
+//                    SetNextTurn();
+//                    EventManager.PlayerSelected();
+					Invoke("ChangeTurn", 1f);
                 }
             }
 
@@ -217,44 +250,125 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void CountPawnsAtHome()
+	void ChangeTurn()
+	{
+		SetNextTurn();
+		EventManager.PlayerSelected();
+	}
+
+    public void CheckPlayersOnDisconnect(PawnColor col)
     {
-        switch (currentPlayerTurn)
+        switch (col)
         {
             case PawnColor.c_Blue:
-                blueHomeCount++;
-                if (blueHomeCount == 4)
+                if (blueHomeCount < 4)
                 {
-                    totalFinishCount++;
-                    totalPlayers.Remove(PawnColor.c_Blue);
+                    totalPlayersPlayingCount--;
+                    blueHomeCount = -1;
                 }
                 break;
             case PawnColor.c_Red:
-                redHomeCount++;
-                if (redHomeCount == 4)
+                if (redHomeCount < 4)
                 {
-                    totalFinishCount++;
-                    totalPlayers.Remove(PawnColor.c_Red);
+                    totalPlayersPlayingCount--;
+                    redHomeCount = -1;
                 }
                 break;
             case PawnColor.c_Yellow:
-                yellowHomeCount++;
-                if (yellowHomeCount == 4)
+                if (yellowHomeCount< 4)
                 {
-                    totalFinishCount++;
-                    totalPlayers.Remove(PawnColor.c_Yellow);
+                    totalPlayersPlayingCount--;
+                    yellowHomeCount = -1;
                 }
                 break;
             case PawnColor.c_Green:
-                greenHomeCount++;
-                if (greenHomeCount == 4)
+                if (greenHomeCount < 4)
                 {
-                    totalFinishCount++;
-                    totalPlayers.Remove(PawnColor.c_Green);
+                    totalPlayersPlayingCount--;
+                    greenHomeCount = -1;
                 }
                 break;
         }
 
+        if (totalFinishCount == totalPlayersPlayingCount - 1 && totalFinishCount > 0)
+        {
+            if (greenHomeCount < 4)
+            {
+                if(totalPlayers.Contains(PawnColor.c_Green))
+                {
+                    int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Green);
+                    ui_m.FinishList.Add(playerNames[indexOfColor]);
+                    ui_m.OnGameOver("Green Lost");
+                    if (PlayerSelection.playerColor == PawnColor.c_Green)
+                    {
+                        am.isFirstLoss();
+                    }
+                    return;
+                }
+                
+            }
+            if (redHomeCount < 4)
+            {
+                if (totalPlayers.Contains(PawnColor.c_Red))
+                {
+                    int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Red);
+                    ui_m.FinishList.Add(playerNames[indexOfColor]);
+                    ui_m.OnGameOver("Red Lost");
+                    if (PlayerSelection.playerColor == PawnColor.c_Red)
+                    {
+                        am.isFirstLoss();
+                    }
+                    return;
+                }
+               
+            }
+            if (blueHomeCount < 4)
+            {
+                if (totalPlayers.Contains(PawnColor.c_Blue))
+                {
+                    int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Blue);
+                    ui_m.FinishList.Add(playerNames[indexOfColor]);
+                    ui_m.OnGameOver("Blue Lost");
+                    if (PlayerSelection.playerColor == PawnColor.c_Blue)
+                    {
+                        am.isFirstLoss();
+                    }
+                    return;
+                }
+                
+            }
+            if (yellowHomeCount < 4)
+            {
+                if (totalPlayers.Contains(PawnColor.c_Yellow))
+                {
+                    int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Yellow);
+                    ui_m.FinishList.Add(playerNames[indexOfColor]);
+                    ui_m.OnGameOver("Yellow Lost");
+                    if (PlayerSelection.playerColor == PawnColor.c_Yellow)
+                    {
+                        am.isFirstLoss();
+                    }
+                    return;
+                }
+                
+            }
+        }
+        else
+        {
+            if (totalPlayersPlayingCount == 1)
+            {
+                ui_m.OnGameOver("connection lost");
+            }
+        }
+    }
+
+    public void OnLoosingServer()
+    {
+        ui_m.OnGameOver("connection lost");
+    }
+
+    void OnFinish()
+    {
         //CHecking for Win Achievements;
         if (totalFinishCount == 1)
         {
@@ -267,6 +381,8 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     am.FirstSinglePlayerWin();
+                    CoinManager.AwardCoins(10);
+
                 }
             }
             else
@@ -275,10 +391,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (totalFinishCount == PlayerSelection.playerInfo.Count-1)
+        if (totalFinishCount == totalPlayersPlayingCount - 1)
         {
-            if (greenHomeCount < 4)
+            if (greenHomeCount < 4 && greenHomeCount >= 0)
             {
+                int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Green);
+                ui_m.FinishList.Add(playerNames[indexOfColor]);
                 ui_m.OnGameOver("Green Lost");
                 if (PlayerSelection.playerColor == PawnColor.c_Green)
                 {
@@ -286,8 +404,10 @@ public class GameManager : MonoBehaviour
                 }
                 return;
             }
-            if (redHomeCount < 4)
+            if (redHomeCount < 4 && redHomeCount >= 0)
             {
+                int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Red);
+                ui_m.FinishList.Add(playerNames[indexOfColor]);
                 ui_m.OnGameOver("Red Lost");
                 if (PlayerSelection.playerColor == PawnColor.c_Red)
                 {
@@ -295,8 +415,10 @@ public class GameManager : MonoBehaviour
                 }
                 return;
             }
-            if (blueHomeCount < 4)
+            if (blueHomeCount < 4 && blueHomeCount >= 0)
             {
+                int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Blue);
+                ui_m.FinishList.Add(playerNames[indexOfColor]);
                 ui_m.OnGameOver("Blue Lost");
                 if (PlayerSelection.playerColor == PawnColor.c_Blue)
                 {
@@ -304,8 +426,10 @@ public class GameManager : MonoBehaviour
                 }
                 return;
             }
-            if (yellowHomeCount < 4)
+            if (yellowHomeCount < 4 && yellowHomeCount >= 0)
             {
+                int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Yellow);
+                ui_m.FinishList.Add(playerNames[indexOfColor]);
                 ui_m.OnGameOver("Yellow Lost");
                 if (PlayerSelection.playerColor == PawnColor.c_Yellow)
                 {
@@ -314,11 +438,108 @@ public class GameManager : MonoBehaviour
                 return;
             }
         }
+        else
+        {
+            
+            if (PlayerSelection.playerColor == currentPlayerTurn && !PlayerSelection.isNetworkedGame)
+            {
+				ui_m.OnGameOver("Game Over, Player was: " + totalFinishCount.ToString());
+            }
+            else
+            {
+                OnMoveFinished(null);
+            }
+
+
+        }
+    }
+    public void CountPawnsAtHome()
+    {
+        switch (currentPlayerTurn)
+        {
+            case PawnColor.c_Blue:
+                blueHomeCount++;
+                if (blueHomeCount == 4)
+                {
+                    int index = totalPlayers.IndexOf(currentPlayerTurn);
+                    ui_m.FinishList.Add(playerNames[index]);
+                    totalFinishCount++;
+                    playerNames.Remove(playerNames[index]);
+                    totalPlayers.Remove(PawnColor.c_Blue);
+                    OnFinish();
+                }
+                else
+                {
+                    if (blueHomeCount < 4)
+                    {
+                        OnMoveFinished(this.gameObject);
+                    }
+                }
+                break;
+            case PawnColor.c_Red:
+                redHomeCount++;
+                if (redHomeCount == 4)
+                {
+                    int index = totalPlayers.IndexOf(currentPlayerTurn);
+                    ui_m.FinishList.Add(playerNames[index]);
+                    totalFinishCount++;
+                    playerNames.Remove(playerNames[index]);
+                    totalPlayers.Remove(PawnColor.c_Red);
+                    OnFinish();
+                }
+                else
+                {
+                    if (redHomeCount < 4)
+                    {
+                        OnMoveFinished(this.gameObject);
+                    }
+                }
+                break;
+            case PawnColor.c_Yellow:
+                yellowHomeCount++;
+                if (yellowHomeCount == 4)
+                {
+                    int index = totalPlayers.IndexOf(currentPlayerTurn);
+                    ui_m.FinishList.Add(playerNames[index]);
+                    totalFinishCount++;
+                    playerNames.Remove(playerNames[index]);
+                    totalPlayers.Remove(PawnColor.c_Yellow);
+                    OnFinish();
+                }
+                else
+                {
+                    if (yellowHomeCount < 4)
+                    {
+                        OnMoveFinished(this.gameObject);
+                    }
+                }
+                break;
+            case PawnColor.c_Green:
+                greenHomeCount++;
+                if (greenHomeCount == 4)
+                {
+                    int index = totalPlayers.IndexOf(currentPlayerTurn);
+                    ui_m.FinishList.Add(playerNames[index]);
+                    totalFinishCount++;
+                    playerNames.Remove(playerNames[index]);
+                    totalPlayers.Remove(PawnColor.c_Green);
+                    OnFinish();
+                }
+                else
+                {
+                    if (greenHomeCount < 4)
+                    {
+                        OnMoveFinished(this.gameObject);
+                    }
+                }
+                break;
+        }
+
     }
     public void SetDiceRollValue(int in_Value)
     {
         HideDice();
-        ui_m.ShowDiceValues(currentPlayerTurn, in_Value.ToString());
+        //ui_m.ShowDiceValues(currentPlayerTurn, in_Value.ToString());
         canSelectPlayer = true;
         diceRollValue = in_Value;
         switch (currentPlayerTurn)
@@ -390,7 +611,7 @@ public class GameManager : MonoBehaviour
                 currentPlayer.GetComponent<PlayerMovement>().MoveCharacter();
                 EventManager.PlayerSelected();
                 canSelectPlayer = false;
-                AudioManager.Instance.PawnMove(true);
+               // AudioManager.Instance.PawnMove(true);
                 break;
             }
         }
@@ -412,7 +633,7 @@ public class GameManager : MonoBehaviour
                     currentPlayer = obj;
                     obj.GetComponent<PlayerMovement>().MoveCharacter();
                     EventManager.PlayerSelected();
-                    AudioManager.Instance.PawnMove(true);
+                    //AudioManager.Instance.PawnMove(true);
                     AudioManager.Instance.ClickPawns();
                 }
                 canSelectPlayer = false;
@@ -424,7 +645,7 @@ public class GameManager : MonoBehaviour
     {
         lockedplayers = 0;
         currentPlayer = null;
-        AudioManager.Instance.PawnMove(false);
+        //AudioManager.Instance.PawnMove(false);
         if (diceRollValue == 6 || player_killed != null)
         {
             if (!CheckAITurn())
@@ -447,6 +668,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+//			print("")
             DiceValues.Clear();
             SetNextTurn();
         }
@@ -457,13 +679,29 @@ public class GameManager : MonoBehaviour
         if (PlayerSelection.isNetworkedGame)
         {
             nm_server.ThrowDice();
-            Debug.Log("Check");
         }
         else
         {
             ShowDice();
             dice.ThrowDice();
         }
+    }
+
+    public void UIDiceValueShowOnRollStop(int val)
+    {
+        if (PlayerSelection.isNetworkedGame)
+        {
+            nm_server.UIDice(val);
+        }
+        else
+        {
+            showUIDice(val);
+        }
+    }
+
+    public void showUIDice(int in_Value)
+    {
+        ui_m.ShowDiceValues(currentPlayerTurn, in_Value.ToString());
     }
 
     public void SetDiceVale(int val)
@@ -481,13 +719,51 @@ public class GameManager : MonoBehaviour
     public void ShowDice()
     {
         dice.ShowDice(false);
-        //AudioManager.Instance.RollTheDice(true);
+       // ui_m.HideDiceImage();
+        AudioManager.Instance.RollTheDice(true);
     }
     public void HideDice()
     {
         dice.ShowDice(true);
-        //AudioManager.Instance.RollTheDice(false);
+        AudioManager.Instance.RollTheDice(false);
     }
 
 
+    int killcount, deathcount;
+    public void IncreaseKillCount()
+    {
+        killcount++;
+
+        if (killcount == 5)
+        {
+            am.KillStreak();
+        }
+        if (killcount == 10)
+        {
+            am.KillStreakOne();
+        }
+        if (killcount == 15)
+        {
+            am.KillStreakTwo();
+        }
+    }
+
+    public void IncreaseDeathCount()
+    {
+        killcount = 0;
+        deathcount++;
+
+        if (deathcount == 5)
+        {
+            am.DeathStreak();
+        }
+        if (deathcount == 10)
+        {
+            am.DeathStreakOne();
+        }
+        if (deathcount == 20)
+        {
+            am.DeathStreakTwo();
+        }
+    }
 }

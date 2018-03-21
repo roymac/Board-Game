@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking.Match;
 
 public struct PlayerStruct
 {
@@ -45,8 +46,10 @@ public class LobbyManager : NetworkBehaviour
 
     public static string tempName;
 	public Netmanager ownManager;
-	public int noOfPlayers = 0, isplayerReady = 0;
+    public static int noOfPlayers = 0;
+    public int  isplayerReady = 0;
 	public GameObject startGameBtn;
+    public GameObject ConLostScreen;
 
 
 	[SyncVar]
@@ -68,58 +71,109 @@ public class LobbyManager : NetworkBehaviour
 	public Text roomNameHeader, textData;
 
 	public bool isReady = false;
+    bool first = true;
+
+    public GameObject loadingScreen;
 
 
-	void SetDatap1(string name)
+    void SetDatap1(string name)
 	{
+		print ("THIS IS OVERRIDING SHIT1");
+        if (P1Field.text == "" && name != "")
+        {
+            print("text" + P1Field.text);
+            isplayerReady++;
+        }
+        else
+        {
+			if (name == "" && P1Field.text != "")
+            {
+                isplayerReady--;
+            }
+        }
+       
 		P1Field.text = name;
 		playerStructure1.name = name;
         playerStructure1.color = P1Field.gameObject.GetComponent<GameDataHolder>().color;
         playerStructure1.selected = true;
         P1Field.transform.GetComponentInParent<GameDataHolder>().isSelected = true;
-		isplayerReady++;
-	}
+
+    }
 
 	void SetDatap2(string name)
 	{
+		print ("THIS IS OVERRIDING SHIT2");
+        if (P2Field.text == "" && name != "")
+        {
+            isplayerReady++;
+        }
+        else
+        {
+			if (name == "" && P2Field.text != "")
+            {
+                isplayerReady--;
+            }
+        }
 		P2Field.text = name;
 		playerStructure2.name = name;
         playerStructure2.color = P2Field.gameObject.GetComponent<GameDataHolder>().color;
         playerStructure2.selected = true;
         P2Field.transform.GetComponentInParent<GameDataHolder>().isSelected = true;
-		isplayerReady++;
-	}
+    }
 
 	void SetDatap3(string name)
 	{
+        if (P3Field.text == "" && name != "")
+        {
+            isplayerReady++;
+        }
+        else
+        {
+			if (name == "" && P3Field.text != "")
+            {
+                isplayerReady--;
+            }
+        }
 		P3Field.text = name;
 		playerStructure3.name = name;
         playerStructure3.color = P3Field.gameObject.GetComponent<GameDataHolder>().color;
         playerStructure3.selected = true;
         P3Field.transform.GetComponentInParent<GameDataHolder>().isSelected = true;
-		isplayerReady++;
-	}
+    }
 
 	void SetDatap4(string name)
 	{
+        if (P4Field.text == "" && name != "")
+        {
+            isplayerReady++;
+        }
+        else
+        {
+			if (name == "" && P4Field.text != "")
+            {
+                isplayerReady--;
+            }
+        }
 		P4Field.text = name;
 		playerStructure4.name = name;
         playerStructure4.color = P4Field.gameObject.GetComponent<GameDataHolder>().color;
         playerStructure4.selected = true;
         P4Field.transform.GetComponentInParent<GameDataHolder>().isSelected = true;
-		isplayerReady++;
 	}
 
 
 	void Awake()
 	{
-		//roomName = DiscoverNetworks.Instance.broadcastData;
-
+        //roomName = DiscoverNetworks.Instance.broadcastData;
+        noOfPlayers = 0;
+        if(!NetworkTest.isLAN)
+        InvokeRepeating("CheckForConnections", 0.5f, 1f);
 	}
 
 	// Use this for initialization
 	void Start () 
     {
+        print("From lobby : " + SelectPlayField.whichLevel);
 		playerDataArray = new List<PlayerStruct> ();
 
 		P1Field = GameObject.Find("P1").GetComponent<InputField>();
@@ -142,17 +196,55 @@ public class LobbyManager : NetworkBehaviour
         P2Field.GetComponentInParent<GameDataHolder>().isSelected = playerStructure2.selected;
         P3Field.GetComponentInParent<GameDataHolder>().isSelected = playerStructure3.selected;
         P4Field.GetComponentInParent<GameDataHolder>().isSelected = playerStructure4.selected;
+        GameObject.Find("AudioManager").GetComponent<LudoLoader>().LevelLoadScreen = loadingScreen;
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if (isplayerReady >= 2 && isServer && !isReady) {	//Show start game button on the host.
-			startGameBtn.SetActive (true);
-			isReady = true;
-		}
+        if (isplayerReady >= 2 && isplayerReady == noOfPlayers && isServer && !isReady)
+        {   //Show start game button on the host.
+            startGameBtn.SetActive(true);
+            isReady = true;
+        }
+        else
+        {
+			if (isServer && isplayerReady < 2) {
+				startGameBtn.SetActive (false);
+				isReady = false;
+			} 
+			else
+			{
+				if (isServer && isplayerReady != noOfPlayers) {
+					startGameBtn.SetActive (false);
+					isReady = false;
+				}
+			}
+			//isReady = false;
+        }
 
 	}
+
+    void CheckForConnections()
+    {
+       if(Application.internetReachability == NetworkReachability.NotReachable && !NetworkTest.isLAN)
+       {
+           CancelInvoke();
+           gameObject.SetActive(false);
+           if (!NetworkTest.isLAN)
+           {
+               ConLostScreen.SetActive(true);
+               Invoke("LoadMainMenu", 1f);
+               NetworkManager.singleton.StopMatchMaker();
+               NetworkManager.singleton.StopClient();
+               NetworkManager.singleton.StopHost();
+               DiscoverNetworks.Instance.StopBroadcast();
+
+           }
+
+           Debug.Log("OnDisableCalled on LobbyManager");
+        }
+    }
 
 	public void SelectPlayer(GameObject overlay)
 	{
@@ -160,7 +252,6 @@ public class LobbyManager : NetworkBehaviour
         {
             return;
         }
-
         switch (overlay.transform.GetComponentInParent<GameDataHolder>().playerValue)
         {
             case 1:
@@ -244,8 +335,14 @@ public class LobbyManager : NetworkBehaviour
                     if (isServer)
                     {
                         playerOneField = player.text;
+                        if (first)
+                        {
+                            isplayerReady++;
+                            first = false;
+                        }
+                        
 
-                    }
+                     }
                     else
                     {
                         ownManager.CmdSetData_1(player.text);
@@ -258,8 +355,13 @@ public class LobbyManager : NetworkBehaviour
                     if (isServer)
                     {
                         playerTwoField = player.text;
+                        if (first)
+                        {
+                            isplayerReady++;
+                            first = false;
+                        }
                     }
-                    else
+                else
                     {
                         ownManager.CmdSetData_2(player.text);
                     }
@@ -269,6 +371,11 @@ public class LobbyManager : NetworkBehaviour
                     if (isServer)
                     {
                         playerThreeField = player.text;
+                        if (first)
+                        {
+                            isplayerReady++;
+                            first = false;
+                        }
                     }
                     else
                     {
@@ -280,6 +387,11 @@ public class LobbyManager : NetworkBehaviour
                     if (isServer)
                     {
                         playerFourField = player.text;
+                        if (first)
+                        {
+                            isplayerReady++;
+                            first = false;
+                        }
                     }
                     else
                     {
@@ -333,11 +445,22 @@ public class LobbyManager : NetworkBehaviour
 	void OnApplicationQuit()	//This should happen when the player quits the match as well.
 	{
 		//DiscoverNetworks.Instance.StopBroadcast ();
-		if (!isClient) {
+		if (!isClient) 
+        {
 			NetworkManager.singleton.StopHost ();
-		} else {
+		} 
+        else 
+        {
 			NetworkManager.singleton.StopClient ();
 		}
+        if (NetworkTest.isLAN)
+        {
+            DiscoverNetworks.Instance.StopBroadcast();
+        }
+        else
+        {
+            NetworkManager.singleton.StopMatchMaker();
+        }
 	}
 
     public void GoToScene()
@@ -345,15 +468,63 @@ public class LobbyManager : NetworkBehaviour
         // SceneManager.LoadScene("LudoLevel");
         if (isServer)
         {
-            RpcShiftScenes();
+            if (!NetworkTest.isLAN)
+            {
+                NetworkManager.singleton.matchMaker.SetMatchAttributes(NetworkManager.singleton.matchInfo.networkId, false, 0, OnHideMatch);
+            }
+            else
+            {
+                RpcShiftScenes(SelectPlayField.whichLevel);
+            }
+        }
+    }
+
+    public void OnHideMatch(bool success, string extendedInfo)
+    {
+        if (success)
+        {
+            RpcShiftScenes(SelectPlayField.whichLevel);
+        }
+        else
+        {
+            Debug.Log("network issues detected");
         }
     }
 
     [ClientRpc]
-    public void RpcShiftScenes()
+    public void RpcShiftScenes(string level)
     {
-        Debug.Log(PlayerSelection.playerColor);
-        SceneManager.LoadScene("LudoLevel");
+        Debug.Log(level);
+        LudoLoader.instance.LevelLoaderCallNormal(level);
+        //SceneManager.LoadScene(level);
     }
+
+	bool serverstarted;
+
+    private void OnDisable()
+    {
+//		ConLostScreen.SetActive(true);
+//		Invoke("LoadMainMenu", 1f);
+//		NetworkManager.singleton.StopMatchMaker();
+//		NetworkManager.singleton.StopClient();
+//		NetworkManager.singleton.StopHost();
+//		DiscoverNetworks.Instance.StopBroadcast();
+    }
+
+	void OnEnable()
+	{
+		serverstarted = true;
+	}
+
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    void OnDestroy()
+    {
+        isSelected = false;
+    }
+    
 }
 

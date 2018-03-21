@@ -28,13 +28,15 @@ public class NetworkManagerServer : NetworkBehaviour
         nm = GameObject.Find("NetWork Manager");
 
         gm.nm_server = this;
-
     }
 
 
     void Start()
     {
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        nm = GameObject.Find("NetWork Manager");
 
+        gm.nm_server = this;
         servent = GameObject.FindGameObjectsWithTag("NetworkManager");
 
         for (int i = 0; i < servent.Length; i++)
@@ -122,6 +124,20 @@ public class NetworkManagerServer : NetworkBehaviour
         gm.ShowDice();
     }
 
+    [ClientRpc]
+    void RpcUIDiceChange(int val)
+    {
+        gm.showUIDice(val);
+    }
+
+    public void UIDice(int val)
+    {
+        if(isServer)
+        {
+            RpcUIDiceChange(val);
+        }
+    }
+
     public void SetDiceValue(int val)
     {
         if (isServer)
@@ -196,6 +212,17 @@ public class NetworkManagerServer : NetworkBehaviour
 
     public void OnDropConnection(PawnColor col)
     {
+        Debug.Log(Time.time + "Pawn Destroyed");
+
+        if (col == PlayerSelection.playerColor)
+        {
+            gm.OnLoosingServer();
+        }
+        else
+        {
+            gm.CheckPlayersOnDisconnect(col);
+        }
+
         int indexOfColor = gm.totalPlayers.IndexOf(col);
         gm.totalPlayers.Remove(col);
         gm.playerNames.RemoveAt(indexOfColor);
@@ -219,12 +246,20 @@ public class NetworkManagerServer : NetworkBehaviour
             SetNextTurn();
         }
 
-        if (gm.totalPlayers.Count < 2)
-        {
-            SceneManager.LoadScene(0);
-        }
+       //if (gm.totalPlayers.Count < 2)
+       //{
+       //    SceneManager.LoadScene(0);
+       //}
+
 
     }
 
-
+    private void OnDestroy()
+    {
+        NetworkManager.singleton.StopMatchMaker();
+        NetworkManager.singleton.StopHost();
+        NetworkManager.singleton.StopClient();
+        NetworkServer.Reset();
+        Network.Disconnect();
+    }
 }

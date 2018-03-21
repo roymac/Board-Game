@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
 
 
 public class NetworkTest : MonoBehaviour {
@@ -11,26 +12,32 @@ public class NetworkTest : MonoBehaviour {
     public static bool isLAN;
 
 	public Text ipAddText;
-	public GameObject menuObj, hostList, serverSetup, mpModeObj;
+	public GameObject menuObj, hostList, serverSetup, mpModeObj, themeNShop, enterNametext;
 
 	public List<string> gameName;
 	public List<string> gameIP;
 	public GameObject scrollparent, gameElement;
 
-	public InputField serverName;
+	public InputField serverNameRP;
 	public string nameData;
+
+    public List<GameObject> gamesList;
+    public GameObject NoGameText;
     //method to differentiate between lan and online
  
 
 	void Start ()
     {
 		SetMultiplayerMode (isLAN);
+        //if(!isLAN)
+		//InvokeRepeating ("RefreshGameList", 0, 10f);
     }
 	
 	void Update ()
     {
 		
 	}
+
     public void SetMultiplayerMode(bool isOffline)
     {
         //isLAN = isOffline;
@@ -53,35 +60,70 @@ public class NetworkTest : MonoBehaviour {
    
 	public void TimeToHost()
 	{
-        serverSetup.SetActive(true);
+        //serverSetup.SetActive(true);
+        // CoinManager.CoinsText = GameObject.Find("NoOfCoins_txt").GetComponent<Text>();
+        NoGameText.SetActive(false);
+        themeNShop.SetActive(true);
         menuObj.SetActive(false);
-        
-       
-	}
+        CoinManager.Init();
+
+        AudioManager.Instance.UIClick();
+    }
+
+    public void SetupRoom()
+    {
+        print(SelectPlayField.whichLevel);
+
+		AnalyticsResult result = Analytics.CustomEvent ("SelectedBoard", new Dictionary<string, object>			//log analytics event for board selection
+			{
+				{"SelectedLevel", SelectPlayField.whichLevel}	
+			});
+		print ("Board analytics result : " + result);
+
+        serverSetup.SetActive(true);
+        themeNShop.SetActive(false);
+
+		AudioManager.Instance.UIClick();
+    }
 
 	public void HostGame()      //Hosting a game
 	{
         Debug.Log ("started as host");
-		serverSetup.SetActive (false);
-        DiscoverNetworks.Instance.StopBroadcast();
-        NetworkServer.Reset();
-        if (isLAN)
-        {
-            Debug.Log("LAN SHIT : ");
-            DiscoverNetworks.Instance.StartBroadCasting();
-            NetworkManager.singleton.StartHost();
-           // LobbyManager.tempName = NetworkManager.singleton.matchName;
-        }
-        else
-        {
-            Debug.Log("ONLINE SHIT : " + NetworkManager.singleton.matchName);
-            CreateInternetMatch(LobbyManager.tempName);
-        }
+
+		if (serverNameRP.text != "") {
+
+			serverSetup.SetActive (false);
+			DiscoverNetworks.Instance.StopBroadcast ();
+			NetworkServer.Reset ();
+			if (isLAN) {
+				Debug.Log ("LAN SHIT : ");
+				DiscoverNetworks.Instance.StartBroadCasting ();
+				NetworkManager.singleton.StartHost ();
+				// LobbyManager.tempName = NetworkManager.singleton.matchName;
+			} else {
+				Debug.Log ("ONLINE SHIT : " + NetworkManager.singleton.matchName);
+
+				CreateInternetMatch (LobbyManager.tempName);
+			}
+		} else {
+			if (enterNametext != null) {
+				enterNametext.SetActive (true);
+				Invoke ("DisableText", 5f);
+			}
+		}
+
+		AudioManager.Instance.UIClick();
+	}
+
+	void DisableText()
+	{
+		enterNametext.SetActive (false);
 	}
 
 
     public void ReadyToJoin(GameObject ip)
     {
+      //  CancelInvoke("RefreshGameList");
         if (isLAN)
         {
             JoinGame(ip);
@@ -89,6 +131,8 @@ public class NetworkTest : MonoBehaviour {
         else
         {
             //  StartCoroutine(joinMatch(ip.GetComponent<GameDataHolder>().matchDetails));
+         //   CancelInvoke("RefreshGameList");
+            
             joinMatch((ip.GetComponent<GameDataHolder>().matchDetails));
         }
     }
@@ -110,13 +154,16 @@ public class NetworkTest : MonoBehaviour {
 	//Click on join to get list of open games
 	public void ReceiveGameBroadCast()
 	{
+		AudioManager.Instance.UIClick();
         if (isLAN)
         {
             DiscoverNetworks.Instance.ReceiveBroadcast();
         }
         else
         {
-            FindInternetMatch("");
+            print("Find match");
+            //FindInternetMatch("");
+          InvokeRepeating("RefreshGameList", 0f, 10f);
         }
 	}
 
@@ -124,11 +171,12 @@ public class NetworkTest : MonoBehaviour {
 	{
         //do something
         print("Display stuff" + data);
-        ipAddText.text = fromIP;
+       // ipAddText.text = fromIP;
 		menuObj.SetActive (false);
 		hostList.SetActive (true);
 
-		if (!gameName.Contains (data)) {
+		if (!gameName.Contains (data))
+        {
 			gameName.Add (data);
             gameIP.Add(fromIP);
             GameObject newGame = Instantiate (gameElement, scrollparent.transform) as GameObject;
@@ -143,8 +191,17 @@ public class NetworkTest : MonoBehaviour {
 		DiscoverNetworks.Instance.onDetectServer -= ReceivedBroadcast;
 	}
 
-  
+
     //--------------------- Online -------------------------------------------
+
+    public void RefreshGameList()
+    {
+        foreach (GameObject obj in gamesList)
+        {
+            Destroy(obj);
+        }
+        FindInternetMatch("");
+    }
 
     //call this method to request a match to be created on the server
     public void CreateInternetMatch(string matchName)
@@ -199,10 +256,15 @@ public class NetworkTest : MonoBehaviour {
                     // obj.transform.GetChild(0).GetComponent<Text>().text = matches[0].name;
                     GameObject newGame = Instantiate(gameElement, scrollparent.transform) as GameObject;
                     newGame.GetComponent<Text>().text = matches[i].name;
-                    newGame.GetComponent<GameDataHolder>().matchDetails= matches[i];
+                    newGame.GetComponent<GameDataHolder>().matchDetails = matches[i];
+                    gamesList.Add(newGame);
+                   
                 }
-
-                //StartCoroutine(joinMatch(matches));
+                NoGameText.SetActive(false);
+            }
+            else
+            {
+                NoGameText.SetActive(true);
             }
         }
         else
@@ -216,12 +278,15 @@ public class NetworkTest : MonoBehaviour {
     {
         if (success)
         {
+            Debug.Log("Join success");
             float t = 0;
             while (t < 1)
             {
                 t += Time.fixedDeltaTime;
             }
             MatchInfo hostInfo = matchInfo;
+            Debug.Log(matchInfo);
+			NetworkManager.singleton.StopClient ();
             NetworkManager.singleton.StartClient(hostInfo);
             //PlayerSelection.playerColor = PawnColor.c_Green;
         }
@@ -236,10 +301,10 @@ public class NetworkTest : MonoBehaviour {
     void joinMatch(MatchInfoSnapshot matches)
     {
         Debug.Log(matches.networkId);
-      //  yield return new WaitForSeconds(2f);
-        //  NetworkManager.singleton.matchMaker.JoinMatch(matches[0].networkId, "", "", "", 0, 0, OnJoinInternetMatch);
+        //yield return new WaitForSeconds(2f);
+        //NetworkManager.singleton.matchMaker.JoinMatch(matches[0].networkId, "", "", "", 0, 0, OnJoinInternetMatch);
         NetworkManager.singleton.matchMaker.JoinMatch(matches.networkId, "", "", "", 0, 0, OnJoinInternetMatch);
         Debug.Log(matches.name);
+        CancelInvoke();
     }
-
 }

@@ -33,6 +33,7 @@ public class AnimControl : MonoBehaviour {
 	public void ShowMenuElementAnim()
 	{
 		menuElement.SetTrigger ("MenuTransition");
+		AudioManager.Instance.UIClick ();
 	}
 
 	public IEnumerator SwitchScreen(GameObject toScreen)
@@ -44,16 +45,13 @@ public class AnimControl : MonoBehaviour {
 		toScreen.GetComponent<Animator>().SetTrigger ("ShowMenu");
 	}
 
-	public void GoToThemeSelection()
-	{
-		
-	}
-
 	public void SetSettingsMenu()
 	{
 		showingMenu = !showingMenu;
 
 		ShowSettingsPanel (showingMenu);
+
+		AudioManager.Instance.UIClick();
 	}
 
 

@@ -7,8 +7,8 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Middle_OuterRing
-  m_Shader: {fileID: 4800000, guid: 66585c30577afa2468657a982246cd21, type: 3}
-  m_ShaderKeywords: COLOR_ON
+  m_Shader: {fileID: 4800000, guid: af5bccc02aa2c7d45bf570aad70b429f, type: 3}
+  m_ShaderKeywords: COLOR_ON EMISSION_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -39,11 +39,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6c889e3866720da458b59a620696a851, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 693cf89ccfee1cf4c829d61835ad2193, type: 3}
+        m_Texture: {fileID: 2800000, guid: ab0832f83e56c2b43ad4d0b3d30f8148, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -64,18 +64,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AmbiencePower: 1.37
-    - _Brightness: 3.3
+    - _Brightness: 2.2
     - _BumpScale: 1
     - _ColorToggle: 1
-    - _Contrast: 2.24
+    - _Contrast: 2.25
     - _Cutoff: 0.5
     - _Detail: 0
     - _DetailNormalMapScale: 1
     - _DetailStrength: 1
     - _DiffusePower: 1
     - _DstBlend: 0
-    - _Emission: 0
-    - _EmissionStrength: 1
+    - _Emission: 1
+    - _EmissionStrength: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -93,7 +93,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 0.9705882, b: 0.9705882, a: 1}
+    - _Color: {r: 0.8455882, g: 0.80613893, b: 0.27357265, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _PointLightColor: {r: 0.85294116, g: 0.8904665, b: 1, a: 1}
     - _PointLightPosition: {r: 0, g: 40.3, b: 0, a: 1}

@@ -11,8 +11,10 @@ public class ScrollValues: MonoBehaviour {
 	public float threshold = 1;
 
 	public int currentSlot;
-	// Use this for initialization
-	void Start () {
+
+  
+    // Use this for initialization
+    void Start () {
 		_scrollRect = this.GetComponentInParent<ScrollRect> ();
 		contentName = "0";
 	}
@@ -25,7 +27,22 @@ public class ScrollValues: MonoBehaviour {
 	public void OnTriggerEnter(Collider other)
 	{
 		contentName = other.GetComponent<Collider> ().name;
-		SnapNumbers ();
+        ItemManager _im = other.GetComponent<ItemManager>();
+
+        if (_im.hasBought)
+        {
+            _im.CanSelectThisBoard(true);
+        }
+        else if (!_im.hasBought)
+        {
+            _im.CanSelectThisBoard(false);
+        }
+
+
+        this.GetComponent<SelectPlayField>().SelectThisBoard(other.GetComponent<ItemManager>().boardIndex);     //Set this as the board
+		//AudioManager.Instance.songNumber = other.GetComponent<ItemManager>().boardIndex + 1;
+        SnapNumbers ();
+        
 	}
 
 	public void OnTriggerExit(Collider other)
@@ -35,14 +52,20 @@ public class ScrollValues: MonoBehaviour {
 
 	public void OnTriggerStay(Collider other)
 	{
-		StopAtZero();
-	}
+        ItemManager _im = other.GetComponent<ItemManager>();
+        //StopAtZero();
+        if (_im.hasBought)
+        {
+            _im.CanSelectThisBoard(true);
+        }
 
-	void StopAtZero()
-	{
-		if(contentName == "0" && _scrollRect.velocity.y < -300)
-			_scrollRect.velocity = Vector2.Lerp(_scrollRect.velocity, Vector2.zero, 25f);
-	}
+    }
+
+	//void StopAtZero()
+	//{
+	//	if(contentName == "0" && _scrollRect.velocity.y < -300)
+	//		_scrollRect.velocity = Vector2.Lerp(_scrollRect.velocity, Vector2.zero, lerpSpeed);
+	//}
 
 	void SnapNumbers()
 	{

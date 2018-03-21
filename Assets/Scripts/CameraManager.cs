@@ -26,6 +26,8 @@ public class CameraManager : MonoBehaviour
 
     public void PassPlayCameras(int key)
     {
+       
+        GetComponent<UIManager>().ShowCameraSelection(0);
         switch (key)
         {
             case 0:
@@ -49,6 +51,7 @@ public class CameraManager : MonoBehaviour
     public void showCamera(int in_color)
     {
         PawnColor col = (PawnColor)in_color;
+        GetComponent<UIManager>().ShowCameraSelection(0);
         switch (col)
         {
             case PawnColor.c_Blue:

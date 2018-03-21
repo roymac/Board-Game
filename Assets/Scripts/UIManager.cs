@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
 
 public class UIManager : MonoBehaviour 
 {
@@ -14,7 +15,15 @@ public class UIManager : MonoBehaviour
     public BoxCollider CentralCollider;
     public ParticleSystem diceParticle;
     public GameObject DiceFeedbackAnimationObject;
-    public Image LoadingScreen;
+    public GameObject LoadingScreen;
+
+    public StartPointVisuals Red, Blue, Green, Yellow;
+    public Sprite[] diceValues;
+    public GameObject diceValImage;
+    public List<string> FinishList;
+
+	public Text rolledDiceNumber;
+
 	// Use this for initialization
 	void Start () 
     {
@@ -22,8 +31,6 @@ public class UIManager : MonoBehaviour
         {
             CameraSelection = PassPlayCameraSelection;
         }
-
-        RemoveLoadingScreen();
 	}
 	
 	// Update is called once per frame
@@ -32,9 +39,9 @@ public class UIManager : MonoBehaviour
 		
 	}
 
-    public void ShowCameraSelection()
+    public void ShowCameraSelection(int key)
     {
-        if (CameraSelection.activeInHierarchy)
+        if (key==0)
         {
             CameraSelection.SetActive(false);
             CameraSelectionButton.SetActive(true);
@@ -48,7 +55,40 @@ public class UIManager : MonoBehaviour
 
     public void OnGameOver(string text)
     {
-        ui_s.GameOver(text);
+		AnalyticsResult result = Analytics.CustomEvent ("GameEnd");
+
+		print ("game end analytics result : " + result);
+        string Overtext = "Player Positions are:\n";
+        if (text.Contains("connection"))
+        {
+            Overtext = text;
+        }
+        else
+        {
+            for (int i = 0; i < FinishList.Count; i++)
+            {
+                string positiontext = " ";
+                switch (i)
+                {
+                    case 0:
+                        positiontext = "First";
+                        break; 
+                    case 1:
+                        positiontext = "Second";
+                        break;
+                    case 2:
+                        positiontext = "Third";
+                        break;
+                    case 4:
+                        positiontext = "Fourth";
+                        break;
+
+                }
+                Overtext += FinishList[i] + " " + positiontext + "\n";
+            }
+        }
+        ui_s.GameOver(Overtext);
+
     }
 
     public void ActivateSpinButton()
@@ -66,62 +106,93 @@ public class UIManager : MonoBehaviour
 
     public void ShowCurrentTurn(PawnColor turn, string name)
     {
+		//HideDiceImage ();
+		rolledDiceNumber.gameObject.SetActive(false);
         switch (turn)
         {
             case PawnColor.c_Blue:
-                showTurn.text = (name == null || name == "") ? "Blues Turn" : name + " Turn";
-                showTurn.color = Color.blue;
-                break;
-            case PawnColor.c_Red:
-                showTurn.text = (name == null || name == "") ? "Reds Turn" : name + " Turn";
-                showTurn.color = Color.red;
-                break;
-            case PawnColor.c_Yellow:
-                showTurn.text = (name == null || name == "") ? "Yellows Turn" : name + " Turn";
-                showTurn.color = Color.yellow;
-                break;
-            case PawnColor.c_Green:
-                showTurn.text = (name == null || name == "") ? "Greens Turn" : name + " Turn";
-                showTurn.color = Color.green;
-                break;
+            showTurn.text = (name == null || name == "") ? "Blues Turn" : name + "'s Turn";
+            showTurn.color = Color.blue;
+            Blue.ShowSelectableAnimation();
+            Red.StopSelectableAnimation();
+            Yellow.StopSelectableAnimation();
+            Green.StopSelectableAnimation();
+			//diceValImage.GetComponent<Image> ().color = Color.blue; 
+			rolledDiceNumber.color = Color.blue;
+			break;
+        	
+			case PawnColor.c_Red:
+			showTurn.text = (name == null || name == "") ? "Reds Turn" : name + "'s Turn";
+            showTurn.color = Color.red;
+            Blue.StopSelectableAnimation();
+            Red.ShowSelectableAnimation();
+            Yellow.StopSelectableAnimation();
+            Green.StopSelectableAnimation();
+			//diceValImage.GetComponent<Image> ().color = Color.red; 
+			rolledDiceNumber.color = Color.red;
+            break;
+       		
+			case PawnColor.c_Yellow:
+			showTurn.text = (name == null || name == "") ? "Yellows Turn" : name + "'s Turn";
+            showTurn.color = Color.yellow;
+            Blue.StopSelectableAnimation();
+            Red.StopSelectableAnimation();
+            Yellow.ShowSelectableAnimation();
+            Green.StopSelectableAnimation();
+			//diceValImage.GetComponent<Image> ().color = Color.yellow; 
+			rolledDiceNumber.color = Color.yellow;
+            break;
+      		
+			case PawnColor.c_Green:
+			showTurn.text = (name == null || name == "") ? "Greens Turn" : name + "'s Turn";
+            showTurn.color = Color.green;
+            Blue.StopSelectableAnimation();
+            Red.StopSelectableAnimation();
+            Yellow.StopSelectableAnimation();
+            Green.ShowSelectableAnimation();
+			//diceValImage.GetComponent<Image> ().color = Color.green;
+			rolledDiceNumber.color = Color.green;
+            break;
         }
+    }
+
+    public void HideDiceImage()
+    {
+        diceValImage.SetActive(false);
     }
 
     public void ShowDiceValues(PawnColor turn, string value)
     {
-        showTurn.text = "Rolled :" + value;
-        switch (turn)
-        {
-            case PawnColor.c_Blue:
-                showTurn.color = Color.blue;
-                break;
-            case PawnColor.c_Red:
-                showTurn.color = Color.red;
-                break;
-            case PawnColor.c_Yellow:
-                showTurn.color = Color.yellow;
-                break;
-            case PawnColor.c_Green:
-                showTurn.color = Color.green;
-                break;
-        }
+		rolledDiceNumber.gameObject.SetActive (true);
+		rolledDiceNumber.text = value;
+
+
+        //showTurn.text = "Rolled :" + value;
+        //diceValImage.SetActive(true);
+        //diceValImage.GetComponent<Image>().sprite = diceValues[int.Parse(value)];
+//
+//
+//        switch (turn)
+//        {
+//		case PawnColor.c_Blue:
+//			showTurn.color = Color.blue;
+//			diceValImage.GetComponent<Image> ().color = Color.blue; 
+//                break;
+//            case PawnColor.c_Red:
+//                showTurn.color = Color.red;
+//                break;
+//            case PawnColor.c_Yellow:
+//                showTurn.color = Color.yellow;
+//                break;
+//            case PawnColor.c_Green:
+//                showTurn.color = Color.green;
+//                break;
+//        }
     }
 
     public void RemoveLoadingScreen()
     {
-        StartCoroutine(FadeAway(1f));
-    }
-
-    IEnumerator FadeAway(float FadeTime)
-    {
-        for (float i = 0; i < FadeTime; i+=Time.deltaTime)
-        {
-            Color col = LoadingScreen.color;
-            Color lerpedColor = Color.Lerp(col, Color.clear, Time.deltaTime);
-            LoadingScreen.color = lerpedColor;
-            yield return null;
-        }
-
-        LoadingScreen.gameObject.SetActive(false);
+        LoadingScreen.GetComponent<LoaderScreenScript>().StopAllCoroutines();
+        LoadingScreen.SetActive(false);
     }
 }

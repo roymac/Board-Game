@@ -4,35 +4,87 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms;
+using GooglePlayGames;
+using UnityEngine.Analytics;
 
 public class UIScript : MonoBehaviour
 {
-
     public Animator mainMenuAnim, settingsAnimator;
-
-    public GameObject pauseMenu, mainMenu, gameoverMenu, pauseButton, noofPlayerScreen, playerSelectScene, gameModeScreen, MultiplayerMode, OfflineOnlineMode;
+	public GameObject pauseMenu, mainMenu, gameoverMenu, noofPlayerScreen, playerSelectScene, gameModeScreen, MultiplayerMode, OfflineOnlineMode, themeSelection, creditsScreen, selectPlayerErrorMsg, quitGameBox;
     public Text GameOverText;
-
     public static int numberOfPlayers = 0;
-
     public static bool isVersusBot = false;
-    public static bool isOnline = false;
+	public static bool isOnline = false, isSP = false;
+	public SocialManager sm;
+	public Text debugtext;
+	public Sprite muteAudioImg, unmuteAudioImg, lowGraphicImg, highGraphicImg;
+	public Button audioBtn, graphicsBtn;
+	public string subject, body;
+    public GameObject loadingScreen;
 
-    // Use this for initialization
+	public bool showQuit = false;
+
+
+	bool muteAudio = false, highGraphic = true; 
+	string muteSetting;
+
+	public QualityManager _qm;
+
+	public GameObject internetConn,ConLostScreen;
+
+	public int playercount;
+
+	public GameObject adAvailableBox;
+
+	void Awake()
+	{
+		
+	}
+
+	// Use this for initialization
     void Start()
     {
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+		if (SceneManager.GetActiveScene ().name == "ClassicBoard")
+        {
+		    AudioManager.Instance.songNumber = 1;
+		}
+        else if(SceneManager.GetActiveScene().name == "StylisedBoard")
+        {
+            AudioManager.Instance.songNumber = 2;
+        }
+
+		AudioManager.Instance.PlayBGMusic (AudioManager.Instance.songNumber);
+
         if(mainMenu != null)
            // mainMenu.SetActive(true);
 
         if (MultiplayerMode != null)
             MultiplayerMode.SetActive(true);
+
+		GetAudioSettingOnStart ();
     }
 
     // Update is called once per frame
     void Update()
     {
-
+		if (Input.GetButtonDown ("Escape")) 
+		{
+			Debug.Log ("Quit game");
+			if (!showQuit) {
+				ShowQuitDialog (true);		
+				showQuit = true;
+			}
+			//QuitGame ();
+		}
     }
+
+	public void ShowAdAvailability(bool visibility)
+	{
+		adAvailableBox.SetActive (visibility);
+	}
 
     public void PauseGame()
     {
@@ -41,30 +93,75 @@ public class UIScript : MonoBehaviour
 
     public static void StartGame()
     {
-        SceneManager.LoadScene(SelectPlayField.whichLevel);
+        //SceneManager.LoadScene(SelectPlayField.whichLevel);
+        LudoLoader.instance.LevelLoaderCall(SelectPlayField.whichLevel);
     }
 
     public void StartTheGame()
     {
-        SceneManager.LoadScene(SelectPlayField.whichLevel);
+		if (isVersusBot)
+		{
+			if (PlayerSelection.playerColor != PawnColor.c_null)
+			{
+				//SceneManager.LoadScene (SelectPlayField.whichLevel);
+                LudoLoader.instance.LevelLoaderCall(SelectPlayField.whichLevel);
+			}
+			else
+			{
+				ShowPlayerSelectionError ();
+			}
+		} 
+		else
+		{
+			//SceneManager.LoadScene (SelectPlayField.whichLevel);
+			if (UIScript.numberOfPlayers == PlayerSelection.playerSelected) {
+				LudoLoader.instance.LevelLoaderCall (SelectPlayField.whichLevel);
+			}
+		}
     }
 
-    public void ExitGame()
+	void ShowPlayerSelectionError()
+	{
+		selectPlayerErrorMsg.SetActive (true);
+		Invoke ("HidePlayerSelectionError", 3f);
+	}
+
+	void HidePlayerSelectionError()
+	{
+		selectPlayerErrorMsg.SetActive (false);
+	}
+
+	public void ExitGame()
     {
        // DiscoverNetworks.Instance.StopBroadcast();
        // NetworkManager.singleton.StopClient();
+		AudioManager.Instance.songNumber = 0;
+		PlayerSelection.playerInfo.Clear();
+		PlayerSelection.playerColor = PawnColor.c_null;
+		PlayerSelection.playerSelected = 0;
         SceneManager.LoadScene("LudoMenu");
-        PlayerSelection.playerInfo.Clear();
-        PlayerSelection.playerColor = PawnColor.c_null;
-
-
-
     }
-
+    
+    public void ShowThemeSelectionAndShopScreen()
+    {
+        mainMenu.SetActive(false);
+        //playerSelectScene.SetActive(false);
+        noofPlayerScreen.SetActive(false);
+        themeSelection.SetActive(true);
+    }
+    
     public void ResumeGame()
     {
         pauseMenu.SetActive(false);
     }
+
+	public void ShowQuitDialog(bool visibility)
+	{
+		quitGameBox.SetActive (visibility);
+		if (visibility == false) {
+			showQuit = false;
+		}
+	}
 
     public void QuitGame()
     {
@@ -85,17 +182,34 @@ public class UIScript : MonoBehaviour
         mainMenu.SetActive(false);
         gameModeScreen.SetActive(false);
         isVersusBot = isSP;
+        isSP = true;
+
+		AudioManager.Instance.UIClick();
+		print ("this is single player : " + isSP);
     }
 
     public void SelectNumberOfPlayer(int playerNumber)
     {
         numberOfPlayers = playerNumber;
+		AudioManager.Instance.UIClick();
     }
 
     public void OpenPlayerSelectionScreen()
     {
-        playerSelectScene.SetActive(true);
+		AudioManager.Instance.UIClick();
+
+		AnalyticsResult result = Analytics.CustomEvent ("SelectedBoard", new Dictionary<string, object>			//log analytics event for board selection
+			{
+				{"SelectedLevel", SelectPlayField.whichLevel}	
+			});
+		print ("Board analytics result : " + result);
+
+
+		print(isVersusBot);
+      	playerSelectScene.SetActive(true);
+        
         noofPlayerScreen.SetActive(false);
+        themeSelection.SetActive(false);
     }
 
     public void OpenGamemodeScreen()
@@ -104,18 +218,197 @@ public class UIScript : MonoBehaviour
         gameModeScreen.SetActive(true);
     }
 
+	public void ShowHotspotText(bool isLan)
+	{
+		if (isLan) {
+			internetConn.SetActive (true);
+		}
+	}
+
 	public void OpenMultiplayerModeScreen(bool isLAN)
     {
-        PlayerSelection.isNetworkedGame = true;
-        SceneManager.LoadScene("Main");
+		onPressOkay ();
+		isSP = false;
+		PlayerSelection.isNetworkedGame = true;
 		NetworkTest.isLAN = isLAN;
+
+		AudioManager.Instance.UIClick ();
+		SceneManager.LoadScene ("Main");
+
+//		if (isLAN) {
+//			if (Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork) {
+//				isSP = false;
+//				PlayerSelection.isNetworkedGame = true;
+//				NetworkTest.isLAN = isLAN;
+//
+//				AudioManager.Instance.UIClick ();
+//				SceneManager.LoadScene ("Main");
+//			} else {
+//				internetConn.SetActive (true);
+//			}
+//		}
+//		else 
+//		{
+//			isSP = false;
+//			PlayerSelection.isNetworkedGame = true;
+//			NetworkTest.isLAN = isLAN;
+//
+//			AudioManager.Instance.UIClick ();
+//			SceneManager.LoadScene ("Main");
+//		}
+        
     }
+
+	public void OnAddPlayerbackend()
+	{
+		playercount++;
+	}
+
+	public void OnRemovePlayerbackend()
+	{
+		playercount--;
+		print ("Playercount" + playercount);
+		if(playercount == 0)
+		{
+			ConLostScreen.SetActive(true);
+			Invoke("LoadMainMenu", 1f);
+			NetworkManager.singleton.StopMatchMaker();
+			NetworkManager.singleton.StopClient();
+			NetworkManager.singleton.StopHost();
+			DiscoverNetworks.Instance.StopBroadcast();
+		}
+	}
+
+	public void LoadMainMenu()
+	{
+		SceneManager.LoadScene(0);
+	}
+
+	public void onPressOkay()
+	{
+		internetConn.SetActive(false);
+	}
     
-    public void SetNetworkMode(bool value)
+//    public void SetNetworkMode(bool value)
+//    {
+//        isSP = false;
+//        isOnline = value;
+//        //MultiplayerMode.SetActive(false);
+//        //OfflineOnlineMode.SetActive(true);
+//    }
+
+    public void ShowAchievements()
     {
-        isOnline = value;
-        MultiplayerMode.SetActive(false);
-        OfflineOnlineMode.SetActive(true);
+		AudioManager.Instance.UIClick();
+        //debugtext.text = SocialManager.IsConnectedtoGoogle.ToString();
+      //  sm.ConnectToGoogleService();
+
+        if (Social.localUser.authenticated)
+        {
+            //print(SocialManager.IsConnectedtoGoogle.ToString());
+            Social.ShowAchievementsUI();
+        }
+        else
+        {
+            sm.ConnectToGoogleService();
+            //print("has Authenticated? : " + SocialManager.IsConnectedtoGoogle.ToString());
+            //Not connected UI text
+        }
     }
+
+	public void GetAudioSettingOnStart()
+	{
+		muteAudio = !(PlayerPrefs.GetInt ("MuteAudio") == 1);
+		if (audioBtn != null) {
+			AudioSetting ();
+		}
+	}
+
+
+	public void AudioSetting()
+	{
+		muteAudio = !muteAudio;
+
+		AudioManager.mute = muteAudio;
+		AudioManager.Instance.MuteAudioSources (AudioManager.mute);
+
+		if (muteAudio) 
+		{
+			audioBtn.GetComponent<Image> ().sprite = muteAudioImg;
+			PlayerPrefs.SetInt ("MuteAudio", 1);
+		}
+		else if (!muteAudio)
+		{
+			//AudioManager.Instance.UIClick();
+			audioBtn.GetComponent<Image> ().sprite = unmuteAudioImg;
+			PlayerPrefs.SetInt("MuteAudio", 0);
+			//AudioManager.Instance.MuteAudioSources (false);
+		}
+
+	
+	}
+
+
+	public void shareText()
+	{
+		AudioManager.Instance.UIClick();
+		//execute the below lines if being run on a Android device
+		#if UNITY_ANDROID
+		//Reference of AndroidJavaClass class for intent
+		AndroidJavaClass intentClass = new AndroidJavaClass ("android.content.Intent");
+		//Reference of AndroidJavaObject class for intent
+		AndroidJavaObject intentObject = new AndroidJavaObject ("android.content.Intent");
+		//call setAction method of the Intent object created
+		intentObject.Call<AndroidJavaObject>("setAction", intentClass.GetStatic<string>("ACTION_SEND"));
+		//set the type of sharing that is happening
+		intentObject.Call<AndroidJavaObject>("setType", "text/plain");
+		//add data to be passed to the other activity i.e., the data to be sent
+		intentObject.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_SUBJECT"), subject);
+		intentObject.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_TEXT"), body);
+		//get the current activity
+		AndroidJavaClass unity = new AndroidJavaClass ("com.unity3d.player.UnityPlayer");
+		AndroidJavaObject currentActivity = unity.GetStatic<AndroidJavaObject>("currentActivity");
+		//start the activity by sending the intent data
+		currentActivity.Call ("startActivity", intentObject);
+		#endif
+
+	}
+
+	//public void CheckIfInternet()
+	//{
+	//	if (noConnectionText != null)
+	//	{
+	//		noConnectionText.gameObject.SetActive (true);
+	//		Invoke ("HideMessage", 3f);
+	//	}
+	//}
+
+	//void HideMessage()
+	//{
+	//	noConnectionText.gameObject.SetActive (false);
+	//}
+
+	public void ApplyGraphicSetting()
+	{
+		highGraphic = !highGraphic;
+
+		if (highGraphic) 
+		{
+			graphicsBtn.GetComponent<Image> ().sprite = highGraphicImg;
+			_qm.SetHighResolution ();		
+		}
+		else
+		{
+			graphicsBtn.GetComponent<Image> ().sprite = lowGraphicImg;
+			_qm.setLowResolution ();
+		}
+		AudioManager.Instance.UIClick();
+	}
+
+	public void ShowCredits(bool show)
+	{
+		creditsScreen.SetActive (show);
+		AudioManager.Instance.UIClick();
+	}
 
 }

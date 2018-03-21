@@ -10,21 +10,33 @@ public class CoinManager : MonoBehaviour {
 
 	public static int NumberOfCoins;
 
+	public AdManager _am;
 
-	void Start()
+    private void Start()
+    {
+        Init();
+		//_am = GameObject.Find ("AudioManager").GetComponent<AdManager> ();
+    }
+
+	public void GoToAdManager()
 	{
-//		PlayerPrefs.DeleteAll ();
-		CoinsText = GameObject.Find ("NoOfCoins_txt").GetComponent<Text> ();	
+		_am.ShowAd ();
+	}
 
-		if(PlayerPrefs.HasKey("NumberOfCoins"))
+
+    public static void Init()
+    {
+        //PlayerPrefs.DeleteAll();
+        CoinsText = GameObject.Find ("NoOfCoins_txt").GetComponent<Text> ();	
+
+		if(PlayerPrefs.HasKey("NumberOfCoins") && CoinsText!=null)
 		{
 			CoinsText.text = PlayerPrefs.GetInt ("NumberOfCoins").ToString();
 			NumberOfCoins = PlayerPrefs.GetInt ("NumberOfCoins");
 		}
 	}
 
-
-	public static void AwardCoins(int coinsAwarded)
+   	public static void AwardCoins(int coinsAwarded)
 	{
 		NumberOfCoins += coinsAwarded;
 		PlayerPrefs.SetInt ("NumberOfCoins", NumberOfCoins);
@@ -63,12 +75,13 @@ public class CoinManager : MonoBehaviour {
 
 	public static void UpdateCoinsText(string coinAmnt)
 	{
-		CoinsText.text = coinAmnt;
+        if (CoinsText != null)
+			CoinsText.text = coinAmnt;
 	}
 
 	public void AddCoins(int coins)		//only for test
 	{
 		AwardCoins (coins);
-	}
+    }
 
 }
