@@ -7,13 +7,16 @@ public class SetPlayerInfo : MonoBehaviour {
 
     public PawnColor playerColor;
     PlayerData data;
-    public int index;
+    public int index, defaultIndex;
+	public bool isSelected = false;
+
     //public Dropdown colorSelect;
 
 	// Use this for initialization
 	void Start () 
     {
-            data.color = playerColor;
+         data.color = playerColor;
+
 	}
 	
 	// Update is called once per frame
@@ -23,25 +26,26 @@ public class SetPlayerInfo : MonoBehaviour {
 
 	public void SetPlayerData(int index)
 	{
-        print(UIScript.isVersusBot);
-        if (!UIScript.isVersusBot)
-        {
-            data.name = this.GetComponent<InputField>().text;
-        }
-        else
-        {
-            PlayerSelection.playerName = this.GetComponent<InputField>().text;
-            PlayerSelection.playerColor = playerColor;
-        }
+		data.name = this.GetComponent<InputField>().text;
+
+		if (UIScript.isVersusBot) {
+			//PlayerSelection.playerName = this.GetComponent<InputField>().text;
+			PlayerSelection.playerColor = playerColor;
+		} else {
+			isSelected = true;
+		}
 
 		
 	}
 
     void OnDestroy()
     {
-        if (gameObject.activeSelf && PlayerSelection.playerInfo.Count>0)
-        {
-            PlayerSelection.playerInfo[index] = data;
-        }
+//		if (gameObject.activeSelf && PlayerSelection.playerInfo.Count>0 && index>=0)
+//        {
+//            PlayerSelection.playerInfo[index] = data;
+//        }
+		if (isSelected) {
+			PlayerSelection.playerInfo.Add (data);
+		}
     }
 }

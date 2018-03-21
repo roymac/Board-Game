@@ -12,11 +12,11 @@ EditorBuildSettings:
     path: Assets/Main.unity
     guid: fc11b0eb52808984b9c5b3e8cd7a607a
   - enabled: 1
-    path: Assets/StylisedBoard.unity
-    guid: 21b08c1ca7313bc41b27d471d158f289
+    path: Assets/LobbyScene.unity
+    guid: b75b6dbe3fa2aec41829323a20800f46
   - enabled: 1
     path: Assets/ClassicBoard.unity
     guid: 3b0f5f9a8391d8e429c374633faa7d56
   - enabled: 1
-    path: Assets/LobbyScene.unity
-    guid: b75b6dbe3fa2aec41829323a20800f46
+    path: Assets/StylisedBoard.unity
+    guid: 21b08c1ca7313bc41b27d471d158f289

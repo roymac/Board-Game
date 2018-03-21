@@ -16,6 +16,10 @@ public class ScrollingUVs_Layers : MonoBehaviour
 		{
 			GetComponent<Renderer>().sharedMaterial.SetTextureOffset( textureName, uvOffset );
 		}
+
+		if (uvOffset.y > 10) {
+			uvOffset.y = 0;
+		}
 	}
 
 //

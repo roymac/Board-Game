@@ -36,6 +36,22 @@ public class DiscoverNetworks : NetworkDiscovery
     {
         if (scene.buildIndex == 0)
         {
+            StopBroadcast();
+            NetworkManager.singleton.StopMatchMaker();
+            if (isServer)
+            {
+                NetworkManager.singleton.StopHost();
+
+            }
+            else
+            {
+                NetworkManager.singleton.StopClient();
+
+            }
+            NetworkServer.Reset();
+            Network.Disconnect();
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+
             Invoke("DestroyInsitance", 1f);
         }
     }
@@ -47,21 +63,24 @@ public class DiscoverNetworks : NetworkDiscovery
 
     void OnDestroy()
     {
-        StopBroadcast();
-        NetworkManager.singleton.StopMatchMaker();
-        NetworkServer.Reset();
-        if (isServer)
-        {
-            NetworkManager.singleton.StopHost ();
-
-        }
-        else
-        {
-            NetworkManager.singleton.StopClient ();
-
-        }
-        Network.Disconnect();
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (NetworkManager.singleton.isNetworkActive)
+        {
+            StopBroadcast();
+            NetworkManager.singleton.StopMatchMaker();
+            NetworkServer.Reset();
+            if (isServer)
+            {
+                NetworkManager.singleton.StopHost();
+        
+            }
+            else
+            {
+                NetworkManager.singleton.StopClient();
+        
+            }
+            Network.Disconnect();
+        }
     }
 
     void OnServerDetected(string add, string data)
@@ -105,7 +124,8 @@ public class DiscoverNetworks : NetworkDiscovery
         }
         else
         {
-            LobbyManager.tempName = bdData;
+            if(InternetChecker.internetConnectBool)
+                LobbyManager.tempName = bdData;
         }
     }
 
@@ -145,6 +165,22 @@ public class DiscoverNetworks : NetworkDiscovery
             NetworkManager.singleton.StopClient ();
             NetworkManager.singleton.StopMatchMaker();
         }
+    }
+
+    void OnDisconnectedFromServer(NetworkDisconnection info)
+    {
+        if (Network.isServer)
+            Debug.Log("Local server connection disconnected");
+        else
+            if (info == NetworkDisconnection.LostConnection)
+            Debug.Log("Lost connection to the server");
+        else
+            Debug.Log("Successfully diconnected from the server");
+    }
+
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene("LudoMenu");
     }
 
 }

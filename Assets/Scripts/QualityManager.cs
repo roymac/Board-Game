@@ -7,6 +7,8 @@ public class QualityManager : MonoBehaviour
 
     Resolution nativeRes;
     public Text debugtest;
+
+
 	// Use this for initialization
 	void Start () 
     {
@@ -36,12 +38,14 @@ public class QualityManager : MonoBehaviour
 
     public void setLowResolution()
     {
+		print ("Low Res");
         Screen.SetResolution(1280,720, true);
         QualitySettings.SetQualityLevel((int)QualityLevel.Fast,true);
     }
 
     public void SetHighResolution()
     {
+		print ("High Res");
         Screen.SetResolution(nativeRes.width, nativeRes.height,true);
         QualitySettings.SetQualityLevel((int)QualityLevel.Beautiful,true);
     }

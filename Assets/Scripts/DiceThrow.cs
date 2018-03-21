@@ -82,9 +82,17 @@ public class DiceThrow : MonoBehaviour
             {
                 GetComponent<Animator>().speed = 0;
                 currentEventCount = 0;
-                gm.SetDiceVale(framveValues[num]);
+                //gm.SetDiceVale(framveValues[num]);
+                StartCoroutine(setDie(framveValues[num]));
             }
         }
+    }
+
+    IEnumerator setDie(int val)
+    {
+        gm.UIDiceValueShowOnRollStop(val);
+        yield return new WaitForSeconds(0.5f);
+        gm.SetDiceVale(val);
     }
 
     public void ThrowDice()

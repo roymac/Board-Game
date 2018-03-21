@@ -80,10 +80,10 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ShakeBending: 0.6
-    - _ShakeDisplacement: 0.703
-    - _ShakeTime: 0.3
-    - _ShakeWindspeed: 0.5
+    - _ShakeBending: 0.636
+    - _ShakeDisplacement: 0.718
+    - _ShakeTime: 0.369
+    - _ShakeWindspeed: 0.536
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -92,7 +92,7 @@ Material:
     - _WaveSpeed: 10
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.20642734, g: 0.30882353, b: 0.13624567, a: 1}
+    - _Color: {r: 0.08423443, g: 0.2794118, b: 0.10808944, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _WindSpeed: {r: 1, g: 1, b: 1, a: 1}
     - _WorldSize: {r: 1, g: 1, b: 1, a: 1}

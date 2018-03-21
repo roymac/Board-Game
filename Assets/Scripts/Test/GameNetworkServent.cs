@@ -66,16 +66,12 @@ public class GameNetworkServent : NetworkBehaviour
         nm_server.SetNextTurn();
     }
 
+
     void OnDestroy()
     {
         if (SceneManager.GetActiveScene().buildIndex > 2)
         {
             nm_server.OnDropConnection(playercolor);
-        }
-        else
-        {
-            //if(DiscoverNetworks.Instance != null)
-            //DiscoverNetworks.Instance.DestroyInsitance();
         }
     }
 }

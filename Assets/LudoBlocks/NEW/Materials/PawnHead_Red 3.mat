@@ -100,7 +100,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Phong: 1
-    - _Progress: 0.9970004
+    - _Progress: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SpecularPower: 0

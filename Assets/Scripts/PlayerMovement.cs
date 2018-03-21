@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
     public GameObject animationChild;
     public Transform StartingBlock;
     public bool ControlledByAI;
+
+    public Transform playerHop;
 
     //selection variables
     public bool isLocked;
@@ -33,6 +36,11 @@ public class PlayerMovement : MonoBehaviour
     protected Quaternion startingRot;
     int killcount, deathcount, statueCount;
     List<PawnColor> killedPawnColor;
+
+    public float JumpHeight;
+
+
+
 	// Use this for initialization
 	void Start () 
     {
@@ -41,9 +49,10 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        playerHop = transform.GetChild(0);
         killedPawnColor = new List<PawnColor>();
         startingRot = transform.GetChild(0).transform.localRotation;
-        originalPosition = this.gameObject.transform.position;
+        originalPosition = this.gameObject.transform.localPosition;
         animationChild = transform.GetChild(0).GetChild(1).gameObject;
         mat.enableInstancing = true;
         if(defaultMat != null)
@@ -52,6 +61,16 @@ public class PlayerMovement : MonoBehaviour
         {
             renderers.Add(animationChild.transform.parent.GetChild(i).GetComponent<MeshRenderer>());
         }
+
+        mat.SetFloat("_Progress", 1);
+        if(defaultMat != null)
+            defaultMat.SetFloat("_Progress", 1);
+        renderers[0].material = mat;
+        if (defaultMat != null)
+            renderers[1].material = defaultMat;
+        else
+            renderers[1].material = mat;
+        
         StartingBlock = target;
         showCanSelect = transform.GetChild(1).GetComponent<ParticleSystem>();
         switch (color)
@@ -121,8 +140,10 @@ public class PlayerMovement : MonoBehaviour
                 if (PlayerSelection.playerColor == color)
                 {
                     //Networked game, checks if it the players turn;
-                    OnMouseDown();
-                    Debug.Log(Time.deltaTime);
+                    if (GetComponent<BoxCollider>().enabled)
+                    {
+                        OnMouseDown();
+                    }
                 } 
             }
             else
@@ -167,7 +188,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (num == 6)
         {
-            if (isLocked && !hasfinished)
+            if (isLocked && !hasfinished && MoveConstraint == 0)
             {
                 canUnlock = true;
             }
@@ -218,7 +239,7 @@ public class PlayerMovement : MonoBehaviour
             if (!isLocked || canUnlock)
             {
                 diceRoll = num;
-                if (MoveConstraint > diceRoll)
+				if (MoveConstraint < diceRoll && MoveConstraint>0)
                 {
                     gm.SetLockedPlayers();
                     GetComponent<PawnAIController>().GetWeight();
@@ -281,22 +302,62 @@ public class PlayerMovement : MonoBehaviour
 
         }
     }
-	
+
+    public bool reachedPeak;
+    bool moving;
+
+    void LateUpdate()
+    {
+
+    }
 	// Update is called once per frame
 	void Update () 
     {
         if (canMove)
         {
-            if (Vector3.Distance(transform.position, target.position) > 0.001f)
+            float distance = Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(target.position.x, target.position.z));
+            if (distance > 0.01f)
             {
                 transform.position = Vector3.MoveTowards(transform.position, target.position, MoveSpeed * Time.deltaTime);
+                //if(playerHop != null)
+                //    playerHop.SetTrigger("Hop");
+
+                if (target != StartingBlock)
+                {
+                    if (reachedPeak)
+                    {
+                        Vector3 pos = playerHop.localPosition;
+                        pos.z -= Time.deltaTime/MoveSpeed;
+                        pos.z = Mathf.Clamp(pos.z, 0, JumpHeight);
+                        playerHop.localPosition = pos;
+                    }
+                    else
+                    {
+                        Vector3 pos = playerHop.localPosition;
+                        pos.z += Time.deltaTime/MoveSpeed;
+                        pos.z = Mathf.Clamp(pos.z, 0, JumpHeight);
+                        playerHop.localPosition = pos;
+                    }
+
+                    if (playerHop.localPosition.z == 0)
+                    {
+                        reachedPeak = false;
+                    }
+                    if (playerHop.localPosition.z == JumpHeight)
+                    {
+                        reachedPeak = true;
+                    }
+                }
             }
             else
             {
+                playerHop.localPosition = Vector3.zero;
+                reachedPeak = false;
                 if (MoveCounter < diceRoll)
                 {
                     target = target.gameObject.GetComponent<WaypointScript>().returnNextPoint(color);
                     MoveCounter++;
+					AudioManager.Instance.PawnMove (true);
                 }
                 else
                 {
@@ -315,7 +376,7 @@ public class PlayerMovement : MonoBehaviour
                             }
                         }
                         am.homesafeCount--;
-                        gm.CountPawnsAtHome();
+                        //gm.CountPawnsAtHome();
                         onFinish.Play();
                         AudioManager.Instance.ReachedFinish();
                         StartCoroutine(FinalFade(3f));
@@ -327,12 +388,8 @@ public class PlayerMovement : MonoBehaviour
                         {
                             if (color == PlayerSelection.playerColor)
                             {
-                                //Killstreak Achievement Check;
-                                killcount++;
-                                if (killcount == 5)
-                                {
-                                    am.KillStreak();
-                                }
+                                //Increase Kill Count;
+                                gm.IncreaseKillCount();
 
                                 //EveryOneButMe achievement Check
                                 if (!killedPawnColor.Contains(obj.GetComponent<PlayerMovement>().color))
@@ -362,13 +419,20 @@ public class PlayerMovement : MonoBehaviour
                                 }
                             }  
                         }
-
-                        gm.OnMoveFinished(obj);
+						StartCoroutine (CallOnMoveFinished (obj));
+//                        gm.OnMoveFinished(obj);
                         GetComponent<PawnAIController>().currentTravelledTiles += diceRoll;
                     }
                 }
             } 
         }
+	}
+
+	IEnumerator CallOnMoveFinished(GameObject obj)
+	{
+		//print ("This is shift turn");
+		yield return new WaitForSeconds (1f);
+		gm.OnMoveFinished(obj);
 	}
 
     public void MoveCharacter()
@@ -383,6 +447,8 @@ public class PlayerMovement : MonoBehaviour
                 }
                 MoveCounter = 0;
                 canMove = true;
+                //JumpHeight = Vector3.Distance(transform.position, target.position) / 2;
+
             }
         }
         else
@@ -392,6 +458,7 @@ public class PlayerMovement : MonoBehaviour
                 target.gameObject.GetComponent<WaypointScript>().SetPlayerOccupy(this.gameObject, true);
                 MoveCounter = 0;
                 canMove = true;
+                //JumpHeight = Vector3.Distance(transform.position, target.position) / 2;
             }
             else
             {
@@ -440,13 +507,9 @@ public class PlayerMovement : MonoBehaviour
        //DeathStreak and TastOfVictory Achievements Check
         if(color == PlayerSelection.playerColor)
         {
-            deathcount++;
-            if (deathcount == 5)
-            {
-                am.DeathStreak();
-            }
+            gm.IncreaseDeathCount();
 
-            if (GetComponent<PawnAIController>().currentTravelledTiles == 51)
+            if (GetComponent<PawnAIController>().currentTravelledTiles == 50)
             {
                 am.TasteOfVictory();
             }
@@ -457,6 +520,9 @@ public class PlayerMovement : MonoBehaviour
         target = StartingBlock;
         isLocked = true;
         canUnlock = false;
+        canMove = false;
+        reachedPeak = false;
+        killcount = 0;
     }
 
     IEnumerator FinalFade(float TimeToFade)
@@ -472,7 +538,8 @@ public class PlayerMovement : MonoBehaviour
             defaultMat.SetFloat("_Progress", i/TimeToFade );
             yield return null;
         }
-        gm.OnMoveFinished(this.gameObject);
+        //gm.OnMoveFinished(this.gameObject);
+        gm.CountPawnsAtHome();
         GetComponent<PawnAIController>().currentTravelledTiles += diceRoll;
         renderers[0].enabled = false;
         renderers[1].enabled = false;
@@ -497,7 +564,7 @@ public class PlayerMovement : MonoBehaviour
                 defaultMat.SetFloat("_Progress", i/TimeToFade );
                 yield return null;
             }
-            transform.position = originalPosition;
+            transform.localPosition = originalPosition;
             StartCoroutine(FadeMaterial(false,TimeToFade));
         }
         // fade from transparent to opaque

@@ -31,6 +31,7 @@ public class StartPointVisuals : MonoBehaviour
     public void StopSelectableAnimation()
     {
         StopAllCoroutines();
+        mat.SetFloat("_EmissionStrength", 0);
     }
 
     IEnumerator FadeInOut(float TimeToFade, bool isFadeIn)

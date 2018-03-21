@@ -122,9 +122,9 @@ public class PawnAIController : MonoBehaviour
                         if (showDebug)
                             Debug.Log("Will be eaten if chased" + gameObject.name + weight);
                         //weight = Mathf.Clamp(weight, 0, 999999);
-                       
+                        point = point.nextPoint[0].GetComponent<WaypointScript>();
                     }
-                    break;
+                    //break;
                 }
                 else
                 {
