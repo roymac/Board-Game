@@ -10,11 +10,13 @@ public class NavigateScreens : MonoBehaviour {
 
     public LobbyManager lm;
 	public PlayerSelection ps;
+	public GameObject loadSaveDataScreen;
 
 	// Use this for initialization
 	void Start () {
         //StartCoroutine(CheckForLobbyManager());
 		ps = this.GetComponent<PlayerSelection>();
+		loadSaveDataScreen = GameObject.Find ("RetrieveData");
 	}
 	
 	// Update is called once per frame
@@ -34,7 +36,15 @@ public class NavigateScreens : MonoBehaviour {
 
     public void GoBackScreen()
     {
-		AudioManager.Instance.UIClick();
+		if (PlayerSelection.isNetworkedGame) {
+			CoinManager.AwardCoins (CoinManager.justDeductedCoins);		//if person joined a nw match and match did not start
+		}
+
+
+		if (loadSaveDataScreen != null) {
+			loadSaveDataScreen.SetActive (false);
+		}
+
         PlayerSelection.isNetworkedGame = false;
 
         PlayerSelection.playerColor = PawnColor.c_null;
@@ -55,7 +65,7 @@ public class NavigateScreens : MonoBehaviour {
 		if (ps != null) {
 			PlayerSelection.playerSelected = 0;
 		}
-           
+		AudioManager.Instance.UIClick();  
     }
 
     public void ClearSelectStatus()

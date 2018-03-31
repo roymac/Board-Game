@@ -82,9 +82,12 @@ public class LudoLoader : MonoBehaviour {
     IEnumerator Loader(string level_name)
     {
         LevelLoadScreen.SetActive(true);
+
         AsyncOperation async = SceneManager.LoadSceneAsync(level_name);
+
         async.allowSceneActivation = false;
-        while (async.progress < 0.9f)
+     
+		while (async.progress < 0.9f)
         {
             yield return null;
         }

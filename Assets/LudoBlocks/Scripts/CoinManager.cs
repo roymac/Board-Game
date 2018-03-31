@@ -10,11 +10,16 @@ public class CoinManager : MonoBehaviour {
 
 	public static int NumberOfCoins;
 
+	//used to hold the amount deducted just in case it has to be given back. like for pooling ,
+	//if the player joins, the coins are deducted, but if the match fails to start, then coins are given back.
+	public static int justDeductedCoins;
+
 	public AdManager _am;
 
     private void Start()
     {
         Init();
+
 		//_am = GameObject.Find ("AudioManager").GetComponent<AdManager> ();
     }
 
@@ -26,14 +31,20 @@ public class CoinManager : MonoBehaviour {
 
     public static void Init()
     {
-        //PlayerPrefs.DeleteAll();
+//		PlayerPrefs.DeleteAll();
+		//AwardCoins(50);
         CoinsText = GameObject.Find ("NoOfCoins_txt").GetComponent<Text> ();	
 
-		if(PlayerPrefs.HasKey("NumberOfCoins") && CoinsText!=null)
+		if (PlayerPrefs.HasKey ("NumberOfCoins") && CoinsText != null)
 		{
-			CoinsText.text = PlayerPrefs.GetInt ("NumberOfCoins").ToString();
+			CoinsText.text = PlayerPrefs.GetInt ("NumberOfCoins").ToString ();
 			NumberOfCoins = PlayerPrefs.GetInt ("NumberOfCoins");
 		}
+		else if(!PlayerPrefs.HasKey ("NumberOfCoins"))
+		{
+			AwardCoins (100);
+		}
+		//PlayerPrefs.DeleteAll();
 	}
 
    	public static void AwardCoins(int coinsAwarded)

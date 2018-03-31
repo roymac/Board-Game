@@ -30,13 +30,19 @@ public class GameManager : MonoBehaviour
     public int totalPlayersPlayingCount = 0;
     public int lockedplayers;
     public List<string> FinishList;
+
+	public int JoinCost;
+
+	public int totalRewardCoins;
+
     void Awake()
     {
-        
+		JoinCost = LobbyManager.JoinAmount;
     }
 	// Use this for initialization
 	void Start () 
     {
+		
 		Debug.Log ("player info : " + PlayerSelection.playerInfo);
         DiceValues = new List<int>();
         am = GetComponent<AchievementsManager>();
@@ -60,7 +66,7 @@ public class GameManager : MonoBehaviour
         playerNames.Clear();
         Debug.Log(SelectPlayField.whichBoard);
         mat.mainTexture = boardTexture[SelectPlayField.whichBoard];
-        print("from manager : " + PlayerSelection.playerInfo.Count);
+       // print("from manager : " + PlayerSelection.playerInfo.Count);
         for (int i = 0; i < PlayerSelection.playerInfo.Count; i++)
         {
             totalPlayers.Add(PlayerSelection.playerInfo[i].color);
@@ -87,6 +93,8 @@ public class GameManager : MonoBehaviour
         }
 
         totalPlayersPlayingCount = totalPlayers.Count;
+
+		totalRewardCoins = totalPlayers.Count * JoinCost;
 
         for (int i = 0; i < totalPlayers.Count; i++)
         {
@@ -358,6 +366,8 @@ public class GameManager : MonoBehaviour
             if (totalPlayersPlayingCount == 1)
             {
                 ui_m.OnGameOver("connection lost");
+				CoinManager.AwardCoins (totalRewardCoins);
+				totalRewardCoins = 0;
             }
         }
     }
@@ -376,6 +386,8 @@ public class GameManager : MonoBehaviour
             {
                 if (PlayerSelection.isNetworkedGame)
                 {
+					CoinManager.AwardCoins (totalRewardCoins);
+					totalRewardCoins = 0;//Award coins on winning..to test
                     am.FirstMultiPlayerWin();
                 }
                 else
@@ -396,7 +408,7 @@ public class GameManager : MonoBehaviour
             if (greenHomeCount < 4 && greenHomeCount >= 0)
             {
                 int indexOfColor = totalPlayers.IndexOf(PawnColor.c_Green);
-                ui_m.FinishList.Add(playerNames[indexOfColor]);
+				ui_m.FinishList.Add(playerNames[indexOfColor]);
                 ui_m.OnGameOver("Green Lost");
                 if (PlayerSelection.playerColor == PawnColor.c_Green)
                 {

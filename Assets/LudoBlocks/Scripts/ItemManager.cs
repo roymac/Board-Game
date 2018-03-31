@@ -20,7 +20,7 @@ public class ItemManager : MonoBehaviour {
 
 	void Start()
 	{
-		CheckIfItemWasAlreadyBought ();
+		 CheckIfItemWasAlreadyBought ();
 	}
 
 	public int GetPrice()
@@ -40,34 +40,32 @@ public class ItemManager : MonoBehaviour {
 
 	public void ItemWasBought()
 	{
-		Debug.Log ("Item was bought");
+		Debug.Log ("Item was bought" + this.gameObject.name);
+
 		this.GetComponent<Image> ().color = Color.white;
 		if (overlay != null) 
 		{
-          //  if (overlay != null)
-            {
-                overlay.SetActive(false);
-            }
-//			if (detailsText != null) {
-//				detailsText.SetActive (false);
-//			}
+			print ("No more overlays");
+        	overlay.SetActive(false);
+
 			PlayerPrefs.SetInt (PlayerprefKey, 1);
 		}
 		hasBought = true;	
 	}
 
-	void CheckIfItemWasAlreadyBought()
+	public void CheckIfItemWasAlreadyBought()
 	{
         Debug.Log("Checking if item was already bought");
         if (PlayerPrefs.GetInt(PlayerprefKey) == 1)
         {
-            this.GetComponent<Image>().color = Color.white;
-            if (overlay != null)
-            {
-                overlay.SetActive(false);
-            }
-//			 
-            hasBought = true;
+//            this.GetComponent<Image>().color = Color.white;
+//            if (overlay != null)
+//            {
+//                overlay.SetActive(false);
+//            }
+////			 
+//            hasBought = true;
+			ItemWasBought();
         }
 
         else if(this.gameObject.name!="Classic")

@@ -52,6 +52,11 @@ public class LobbyManager : NetworkBehaviour
     public GameObject ConLostScreen;
 
 
+	public Sprite[] boardImages;
+	public string[] boardNames;
+	public Image SelectedBoardImage;
+	public Text BoardName;
+
 	[SyncVar]
 	public string roomName;
 
@@ -74,6 +79,8 @@ public class LobbyManager : NetworkBehaviour
     bool first = true;
 
     public GameObject loadingScreen;
+
+	public static int JoinAmount;
 
 
     void SetDatap1(string name)
@@ -173,7 +180,7 @@ public class LobbyManager : NetworkBehaviour
 	// Use this for initialization
 	void Start () 
     {
-        print("From lobby : " + SelectPlayField.whichLevel);
+		//print("From lobby : " + SelectPlayField.whichBoard);
 		playerDataArray = new List<PlayerStruct> ();
 
 		P1Field = GameObject.Find("P1").GetComponent<InputField>();
@@ -197,6 +204,26 @@ public class LobbyManager : NetworkBehaviour
         P3Field.GetComponentInParent<GameDataHolder>().isSelected = playerStructure3.selected;
         P4Field.GetComponentInParent<GameDataHolder>().isSelected = playerStructure4.selected;
         GameObject.Find("AudioManager").GetComponent<LudoLoader>().LevelLoadScreen = loadingScreen;
+
+
+		//Display which board was chosen in the lobby scene
+		if (!isServer) {
+			BoardName.text = SelectPlayField.SelectedBoardName;
+			print ("Selected board : " + SelectPlayField.SelectedBoardName.Length+"yyyy"+ BoardName.text+"KKKKK");
+			if (SelectPlayField.SelectedBoardName == "Classic") {
+				print ("00000");
+				SelectedBoardImage.sprite = boardImages [0];
+			}
+			else if (SelectPlayField.SelectedBoardName == "Ruins") {
+				print ("11111");
+				SelectedBoardImage.sprite = boardImages [1];
+			}
+		}
+		else
+		{
+			SelectedBoardImage.sprite = boardImages [SelectPlayField.whichBoard];
+			BoardName.text = boardNames[SelectPlayField.whichBoard];
+		}
 	}
 	
 	// Update is called once per frame
@@ -234,7 +261,11 @@ public class LobbyManager : NetworkBehaviour
            if (!NetworkTest.isLAN)
            {
                ConLostScreen.SetActive(true);
-               Invoke("LoadMainMenu", 1f);
+
+				CoinManager.AwardCoins (CoinManager.justDeductedCoins);		//if player dcs from lobby screen
+               
+				Invoke("LoadMainMenu", 1f);
+				
                NetworkManager.singleton.StopMatchMaker();
                NetworkManager.singleton.StopClient();
                NetworkManager.singleton.StopHost();
@@ -406,7 +437,7 @@ public class LobbyManager : NetworkBehaviour
 
     public void SetPlayers()
     {
-        if (isServer)
+		if (isServer)
         {
             int boardKey = SelectPlayField.whichBoard;
             RpcGetPlayerStructure(boardKey);

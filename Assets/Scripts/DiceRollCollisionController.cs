@@ -112,7 +112,12 @@ public class DiceRollCollisionController : MonoBehaviour {
 				animator1.gameObject.SetActive (true);
 
 				if(UIScript.isVersusBot || PlayerSelection.isNetworkedGame)
-					Handheld.Vibrate ();
+				{
+					//print (UIScript.vibrate);
+					if (UIScript.vibrate) {
+						Handheld.Vibrate ();
+					}
+				}
 			}
         }
 
@@ -122,7 +127,9 @@ public class DiceRollCollisionController : MonoBehaviour {
 		if (animator1 != null) {
 			animator1.SetBool ("RingAnime", true);
 			if (UIScript.isVersusBot || PlayerSelection.isNetworkedGame) {				//vibrate phone when your turn
-				Handheld.Vibrate ();
+				if (UIScript.vibrate) {
+					Handheld.Vibrate ();
+				}
 			}
 		}
 

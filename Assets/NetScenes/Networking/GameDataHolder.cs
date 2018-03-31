@@ -16,6 +16,8 @@ public class GameDataHolder : MonoBehaviour {
 
     public int playerValue;
 
+	public int JoiningCost;
+
 	void OnDestroy()
 	{
 		if (SceneManager.GetActiveScene ().name == "LobbyScene") {

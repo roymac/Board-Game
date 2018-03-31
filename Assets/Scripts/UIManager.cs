@@ -24,9 +24,20 @@ public class UIManager : MonoBehaviour
 
 	public Text rolledDiceNumber;
 
+    public List<GameObject> positionHolders;
+    public List<Image> badges;
+    public List<Text> Positiontexts;
+    public GameObject EngGamePanel,endgameBG;
+    public Button EndGameBackButton;
+    public GameObject DisconnectionPanel;
+    public GameObject flame_l,flame_r,banner_l,banner_r,flameholder_l,flameholder_r;
+    public Image turnColorIndicator;
+
+	public Color red,blue,green,yellow;
 	// Use this for initialization
 	void Start () 
     {
+        turnColorIndicator = showTurn.transform.parent.GetChild(1).transform.GetChild(0).GetComponent<Image>();
         if (PlayerSelection.playerColor == PawnColor.c_null)
         {
             CameraSelection = PassPlayCameraSelection;
@@ -58,37 +69,71 @@ public class UIManager : MonoBehaviour
 		AnalyticsResult result = Analytics.CustomEvent ("GameEnd");
 
 		print ("game end analytics result : " + result);
-        string Overtext = "Player Positions are:\n";
+        EngGamePanel.SetActive(true);
         if (text.Contains("connection"))
         {
-            Overtext = text;
+            StartCoroutine(EngGameConnectionLostSequence());
         }
         else
         {
             for (int i = 0; i < FinishList.Count; i++)
             {
-                string positiontext = " ";
-                switch (i)
-                {
-                    case 0:
-                        positiontext = "First";
-                        break; 
-                    case 1:
-                        positiontext = "Second";
-                        break;
-                    case 2:
-                        positiontext = "Third";
-                        break;
-                    case 4:
-                        positiontext = "Fourth";
-                        break;
-
-                }
-                Overtext += FinishList[i] + " " + positiontext + "\n";
+                positionHolders[i].SetActive(true);
             }
+            StartCoroutine(EndGameSequence());
         }
-        ui_s.GameOver(Overtext);
+//        ui_s.GameOver(Overtext);
 
+    }
+
+    IEnumerator EngGameConnectionLostSequence()
+    {
+        for (float i = 0; i <= 1; i += Time.deltaTime)
+        {
+            Color col = endgameBG.GetComponent<Image>().color;
+            col.a = i;
+            endgameBG.GetComponent<Image>().color = col;
+            yield return null;
+        } 
+
+        DisconnectionPanel.SetActive(true);
+        EndGameBackButton.interactable = true;
+    }
+
+    IEnumerator EndGameSequence()
+    {
+        for (float i = 0; i <= 1; i += Time.deltaTime)
+        {
+            Color col = endgameBG.GetComponent<Image>().color;
+            col.a = i;
+            endgameBG.GetComponent<Image>().color = col;
+            flameholder_l.GetComponent<Image>().color = col;
+            flameholder_r.GetComponent<Image>().color = col;
+            yield return null;
+        }
+        EngGamePanel.GetComponent<Animator>().enabled = true;
+        banner_l.SetActive(true);
+        banner_r.SetActive(true);
+        flame_l.SetActive(true);
+        flame_r.SetActive(true);
+        
+        for (int i = 0; i < FinishList.Count; i++)
+        {
+            positionHolders[i].SetActive(true);
+            for (float j = 0; j <= 1; j += Time.deltaTime)
+            {
+                Color col = positionHolders[i].GetComponent<Image>().color;
+                col.a = j;
+                positionHolders[i].GetComponent<Image>().color = col;
+                badges[i].color = col;
+                yield return null;
+            }
+            Positiontexts[i].text = FinishList[i];
+            Positiontexts[i].gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        EndGameBackButton.interactable = true;
     }
 
     public void ActivateSpinButton()
@@ -112,7 +157,7 @@ public class UIManager : MonoBehaviour
         {
             case PawnColor.c_Blue:
             showTurn.text = (name == null || name == "") ? "Blues Turn" : name + "'s Turn";
-            showTurn.color = Color.blue;
+			showTurn.color = blue;
             Blue.ShowSelectableAnimation();
             Red.StopSelectableAnimation();
             Yellow.StopSelectableAnimation();
@@ -123,7 +168,7 @@ public class UIManager : MonoBehaviour
         	
 			case PawnColor.c_Red:
 			showTurn.text = (name == null || name == "") ? "Reds Turn" : name + "'s Turn";
-            showTurn.color = Color.red;
+            showTurn.color = red;
             Blue.StopSelectableAnimation();
             Red.ShowSelectableAnimation();
             Yellow.StopSelectableAnimation();
@@ -134,7 +179,7 @@ public class UIManager : MonoBehaviour
        		
 			case PawnColor.c_Yellow:
 			showTurn.text = (name == null || name == "") ? "Yellows Turn" : name + "'s Turn";
-            showTurn.color = Color.yellow;
+			showTurn.color = yellow;
             Blue.StopSelectableAnimation();
             Red.StopSelectableAnimation();
             Yellow.ShowSelectableAnimation();
@@ -145,7 +190,7 @@ public class UIManager : MonoBehaviour
       		
 			case PawnColor.c_Green:
 			showTurn.text = (name == null || name == "") ? "Greens Turn" : name + "'s Turn";
-            showTurn.color = Color.green;
+			showTurn.color = green;
             Blue.StopSelectableAnimation();
             Red.StopSelectableAnimation();
             Yellow.StopSelectableAnimation();
@@ -154,6 +199,8 @@ public class UIManager : MonoBehaviour
 			rolledDiceNumber.color = Color.green;
             break;
         }
+
+        turnColorIndicator.color = rolledDiceNumber.color;
     }
 
     public void HideDiceImage()
