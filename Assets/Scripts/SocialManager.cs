@@ -11,28 +11,17 @@ public class SocialManager : MonoBehaviour {
     public static bool IsConnectedtoGoogle = false;
     //public static SocialManager Instance = null;
     public Text debugtext;
+
+	public GameObject[] allBoards;
+	public GameObject loadSaveScreen;
+
     private void Awake()
     {
-//		  PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
-//		   // enables saving game progress.
-//		   .EnableSavedGames()
-//		   // registers a callback to handle game invitations received while the game is not running.
-//		    // .WithInvitationDelegate(< callback method >)
-//		   // registers a callback for turn based match notifications received while the
-//		   // game is not running.
-//		   //  .WithMatchDelegate(< callback method >)
-//		   // requests the email address of the player be available.
-//		   // Will bring up a prompt for consent.
-//		   .RequestEmail()
-//		   // requests a server auth code be generated so it can be passed to an
-//		   //  associated back end server application and exchanged for an OAuth token.
-//		   .RequestServerAuthCode(false)
-//		   // requests an ID token be generated.  This OAuth token can be used to
-//		   //  identify the player to other services such as Firebase.
-//		   .RequestIdToken()
-//		   .Build();
+		PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder ()
+//	  //--------enables saving game progress--------------
+	   .EnableSavedGames().Build();
 //		
-//     PlayGamesPlatform.InitializeInstance(config);
+     	PlayGamesPlatform.InitializeInstance(config);
 
         //------------------ recommended for debugging:-------------------------------
 
@@ -42,6 +31,7 @@ public class SocialManager : MonoBehaviour {
         PlayGamesPlatform.Activate();
       
         ConnectToGoogleService();
+		//LoadAllData ();
     }
 
     public void ConnectToGoogleService()
@@ -51,7 +41,35 @@ public class SocialManager : MonoBehaviour {
 			Social.localUser.Authenticate (
 				(bool success) => {
 					IsConnectedtoGoogle = success;
-				});
+					//LoadAllData();
+			});
+			
+			
 		} 
+
+		if (!PlayerPrefs.HasKey ("JustInstalled")) {
+			Invoke ("LoadAllData", 3f);
+		}
+
     }
+
+
+
+	public void LoadAllData()
+	{
+		loadSaveScreen.SetActive(true);
+		Invoke ("LoadComplete", 6f);
+		for (int i = 0; i < allBoards.Length; i++)
+		{
+			allBoards [i].GetComponent<GPG_CloudSaveSystem> ().StartLoadingData ();	
+		}
+
+	}
+
+	void LoadComplete()
+	{
+		//this.gameObject.SetActive (false);
+		loadSaveScreen.SetActive(false);
+	}
+
 }

@@ -30,7 +30,6 @@ public class LoaderScreenScript : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-		
 	}
 
     IEnumerator Pulse(float TimeToFade, bool isFadeIn)
@@ -58,4 +57,5 @@ public class LoaderScreenScript : MonoBehaviour
             StartCoroutine(Pulse(TimeToFade, false));
         }
     }
+
 }

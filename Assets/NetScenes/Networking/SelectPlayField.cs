@@ -12,6 +12,8 @@ public class SelectPlayField : MonoBehaviour {
     public List<string> levels;
     public static string whichLevel;
 
+	public static string SelectedBoardName;
+
 	// Use this for initialization
 	void Start () 
     {
@@ -31,7 +33,7 @@ public class SelectPlayField : MonoBehaviour {
         whichBoard = thisBoard;
         whichLevel = levels[whichBoard];
 
-	    print("This board : " + whichLevel);
+		print("This board : " + whichLevel.Length);
 
         //boardImgOverlays[thisBoard].SetActive(true);
         //if (thisBoard == 0)

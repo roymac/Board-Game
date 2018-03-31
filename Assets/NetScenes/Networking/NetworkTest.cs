@@ -11,8 +11,8 @@ public class NetworkTest : MonoBehaviour {
 
     public static bool isLAN;
 
-	public Text ipAddText;
-	public GameObject menuObj, hostList, serverSetup, mpModeObj, themeNShop, enterNametext;
+	public Text ipAddText,enterNametext;
+	public GameObject menuObj, hostList, serverSetup, mpModeObj, themeNShop ;
 
 	public List<string> gameName;
 	public List<string> gameIP;
@@ -23,12 +23,14 @@ public class NetworkTest : MonoBehaviour {
 
     public List<GameObject> gamesList;
     public GameObject NoGameText;
+	public 
     //method to differentiate between lan and online
  
 
 	void Start ()
     {
 		SetMultiplayerMode (isLAN);
+		//enterNametext = GameObject.Find ("EnternameText");	
         //if(!isLAN)
 		//InvokeRepeating ("RefreshGameList", 0, 10f);
     }
@@ -88,36 +90,79 @@ public class NetworkTest : MonoBehaviour {
 
 	public void HostGame()      //Hosting a game
 	{
-        Debug.Log ("started as host");
+        //Debug.Log ("started as host");
+		string tempselectedCoins = serverNameRP.transform.GetChild(1).GetComponentInParent<HostSetup>().selectedCoinsPerRoom;
+		print ("Selected coins" + tempselectedCoins);
 
-		if (serverNameRP.text != "") {
-
-			serverSetup.SetActive (false);
+		if (serverNameRP.text != "" && tempselectedCoins !="" )
+		{
 			DiscoverNetworks.Instance.StopBroadcast ();
 			NetworkServer.Reset ();
-			if (isLAN) {
-				Debug.Log ("LAN SHIT : ");
-				DiscoverNetworks.Instance.StartBroadCasting ();
-				NetworkManager.singleton.StartHost ();
-				// LobbyManager.tempName = NetworkManager.singleton.matchName;
-			} else {
-				Debug.Log ("ONLINE SHIT : " + NetworkManager.singleton.matchName);
 
-				CreateInternetMatch (LobbyManager.tempName);
+			string[] tempcoinsval = tempselectedCoins.Split ();
+
+			if (CoinManager.GetCurrentNumberOfCoins () < int.Parse (tempcoinsval [0]))
+			{
+				ShowErrorTexts ("Not enough coins");
+				print ("Comparing");
+				return;
 			}
-		} else {
-			if (enterNametext != null) {
-				enterNametext.SetActive (true);
-				Invoke ("DisableText", 5f);
+			else 
+			{
+				serverSetup.SetActive (false);
+				print ("Now hostign");
+
+				CoinManager.DeductCoins (int.Parse(tempcoinsval [0]));
+				CoinManager.justDeductedCoins = int.Parse(tempcoinsval [0]) ;
+
+				LobbyManager.JoinAmount = int.Parse (tempcoinsval [0]);
+
+				//host the game
+				if (isLAN) 
+				{
+					Debug.Log ("LAN SHIT : ");
+					DiscoverNetworks.Instance.StartBroadCasting ();
+					NetworkManager.singleton.StartHost ();
+					// LobbyManager.tempName = NetworkManager.singleton.matchName;
+				} 
+				else
+				{
+					Debug.Log ("ONLINE SHIT : " + NetworkManager.singleton.matchName);
+
+					CreateInternetMatch (LobbyManager.tempName);
+				}
+			}
+		} 
+		else
+		{
+			if (enterNametext != null && serverNameRP.text == "")
+			{
+				ShowErrorTexts("Please enter a room name");
+			}
+			else if (enterNametext != null && serverNameRP.transform.GetChild (1).GetComponentInParent<HostSetup> ().selectedCoinsPerRoom == "")
+			{
+				ShowErrorTexts("Please select a coin value");
 			}
 		}
 
 		AudioManager.Instance.UIClick();
 	}
 
+	void ShowErrorTexts(string error)
+	{
+		print (enterNametext);
+		enterNametext = GameObject.Find ("EnternameText").GetComponent<Text> ();
+
+		enterNametext.gameObject.SetActive (true);
+		//enterNametext.GetComponent<Text> ().text = error;
+		enterNametext.text = error;
+
+		Invoke ("DisableText", 5f);
+	}
+
 	void DisableText()
 	{
-		enterNametext.SetActive (false);
+		enterNametext.gameObject.SetActive (false);
 	}
 
 
@@ -126,6 +171,7 @@ public class NetworkTest : MonoBehaviour {
       //  CancelInvoke("RefreshGameList");
         if (isLAN)
         {
+
             JoinGame(ip);
         }
         else
@@ -133,7 +179,7 @@ public class NetworkTest : MonoBehaviour {
             //  StartCoroutine(joinMatch(ip.GetComponent<GameDataHolder>().matchDetails));
          //   CancelInvoke("RefreshGameList");
             
-            joinMatch((ip.GetComponent<GameDataHolder>().matchDetails));
+            joinMatch((ip.GetComponent<GameDataHolder>().matchDetails), ip);
         }
     }
 
@@ -141,14 +187,26 @@ public class NetworkTest : MonoBehaviour {
 	//join a game
 	public void JoinGame(GameObject ip)
 	{
-        hostList.SetActive(false);
-		print(ip.GetComponent<GameDataHolder>().ip);
-        //Network.Disconnect();
-        //NetworkServer.Reset();
-        NetworkManager.singleton.networkAddress = ip.GetComponent<GameDataHolder>().ip;
-        NetworkManager.singleton.StartClient ();
+		if (CoinManager.GetCurrentNumberOfCoins () > ip.GetComponent<GameDataHolder> ().JoiningCost)
+		{
+			hostList.SetActive (false);
+		
+			NetworkManager.singleton.networkAddress = ip.GetComponent<GameDataHolder> ().ip;
 
-        DiscoverNetworks.Instance.StopBroadcast();
+			CoinManager.DeductCoins (ip.GetComponent<GameDataHolder> ().JoiningCost);				//deduct coins based on joining cost
+			CoinManager.justDeductedCoins = ip.GetComponent<GameDataHolder> ().JoiningCost;
+			LobbyManager.JoinAmount = ip.GetComponent<GameDataHolder> ().JoiningCost;
+	       
+			NetworkManager.singleton.StartClient ();
+
+			DiscoverNetworks.Instance.StopBroadcast ();
+		}
+		else
+		{
+			ShowErrorTexts ("Not enough coins");
+			//GameObject.Find("EnternameText").GetComponent<Text>().text = "Not enough coins";
+			CoinManager.justDeductedCoins = 0;
+		}
     }
 
 	//Click on join to get list of open games
@@ -166,11 +224,12 @@ public class NetworkTest : MonoBehaviour {
           InvokeRepeating("RefreshGameList", 0f, 10f);
         }
 	}
-
+	 
+	//this method is called when a list of matches is returned for offline matches
 	public void ReceivedBroadcast(string fromIP, string data)
 	{
         //do something
-        print("Display stuff" + data);
+       // print("Display stuff" + data);
        // ipAddText.text = fromIP;
 		menuObj.SetActive (false);
 		hostList.SetActive (true);
@@ -179,10 +238,25 @@ public class NetworkTest : MonoBehaviour {
         {
 			gameName.Add (data);
             gameIP.Add(fromIP);
-            GameObject newGame = Instantiate (gameElement, scrollparent.transform) as GameObject;
-			newGame.GetComponent<Text> ().text = data;
+         
+			//Display list of matches
+			GameObject newGame = Instantiate (gameElement, scrollparent.transform) as GameObject;
+
+			string[] temp = data.Split (' ');
+
+			for (int i = 0; i < temp.Length; i++) {
+				print (temp [i] + temp [i].Length);
+			}
+
+
+			newGame.transform.GetChild (0).GetComponent<Text> ().text = temp[1];
+			newGame.transform.GetChild (2).GetComponent<Text> ().text =   temp[0];
+			SelectPlayField.SelectedBoardName = temp [0];
+			newGame.transform.GetChild (4).GetComponent<Text> ().text = temp [temp.Length-2]  ; //+ " " +  temp[temp.Length-1]
 			newGame.GetComponent<GameDataHolder> ().name = data;
 			newGame.GetComponent<GameDataHolder> ().ip = fromIP;
+			newGame.GetComponent<GameDataHolder> ().JoiningCost = int.Parse (temp [temp.Length - 2]);
+
 		}
 	}
 
@@ -190,6 +264,8 @@ public class NetworkTest : MonoBehaviour {
 	{
 		DiscoverNetworks.Instance.onDetectServer -= ReceivedBroadcast;
 	}
+
+
 
 
     //--------------------- Online -------------------------------------------
@@ -206,6 +282,8 @@ public class NetworkTest : MonoBehaviour {
     //call this method to request a match to be created on the server
     public void CreateInternetMatch(string matchName)
     {
+		print ("creating internet match : " + matchName);
+
         NetworkManager.singleton.matchMaker.CreateMatch(matchName, 4, true, "", "", "", 0, 0, OnInternetMatchCreate);
         //PlayerSelection.playerColor = PawnColor.c_Blue;
     }
@@ -236,7 +314,7 @@ public class NetworkTest : MonoBehaviour {
         NetworkManager.singleton.matchMaker.ListMatches(0, 10, matchName, true, 0, 0, OnInternetMatchList);
     }
 
-    //this method is called when a list of matches is returned
+    //this method is called when a list of matches is returned for online matches
     private void OnInternetMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
     {
         if (success)
@@ -254,8 +332,17 @@ public class NetworkTest : MonoBehaviour {
                 {
                     // GameObject obj = (GameObject)Instantiate(button, scrollTrans);
                     // obj.transform.GetChild(0).GetComponent<Text>().text = matches[0].name;
+				//	print("ON finding game list : " + matches[i]);
                     GameObject newGame = Instantiate(gameElement, scrollparent.transform) as GameObject;
-                    newGame.GetComponent<Text>().text = matches[i].name;
+
+					string[] temp =  matches[i].name.Split (' ');
+
+
+					newGame.transform.GetChild(0).GetComponent<Text> ().text = temp [1]; //matches[i].name;
+					newGame.transform.GetChild(2).GetComponent<Text> ().text =  temp [0];
+					SelectPlayField.SelectedBoardName = temp [0];
+					newGame.transform.GetChild (4).GetComponent<Text> ().text = temp [temp.Length-2]; // + " " +  temp[temp.Length-1] ;
+					newGame.GetComponent<GameDataHolder> ().JoiningCost = int.Parse(newGame.transform.GetChild (4).GetComponent<Text> ().text);//int.Parse (temp [temp.Length - 3]);
                     newGame.GetComponent<GameDataHolder>().matchDetails = matches[i];
                     gamesList.Add(newGame);
                    
@@ -298,13 +385,23 @@ public class NetworkTest : MonoBehaviour {
 
    
 
-    void joinMatch(MatchInfoSnapshot matches)
+	void joinMatch(MatchInfoSnapshot matches, GameObject details)
     {
-        Debug.Log(matches.networkId);
-        //yield return new WaitForSeconds(2f);
-        //NetworkManager.singleton.matchMaker.JoinMatch(matches[0].networkId, "", "", "", 0, 0, OnJoinInternetMatch);
-        NetworkManager.singleton.matchMaker.JoinMatch(matches.networkId, "", "", "", 0, 0, OnJoinInternetMatch);
-        Debug.Log(matches.name);
-        CancelInvoke();
+
+		if (CoinManager.GetCurrentNumberOfCoins() > details.GetComponent<GameDataHolder> ().JoiningCost)
+		{
+			NetworkManager.singleton.matchMaker.JoinMatch (matches.networkId, "", "", "", 0, 0, OnJoinInternetMatch);
+			Debug.Log (matches.name);
+
+			CoinManager.DeductCoins (details.GetComponent<GameDataHolder> ().JoiningCost);
+			CoinManager.justDeductedCoins = details.GetComponent<GameDataHolder> ().JoiningCost;
+			LobbyManager.JoinAmount = details.GetComponent<GameDataHolder> ().JoiningCost;
+
+			CancelInvoke ();
+		} 
+		else
+		{
+			ShowErrorTexts("Not enough coins");
+		}
     }
 }

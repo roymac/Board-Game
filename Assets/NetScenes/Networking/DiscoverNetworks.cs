@@ -88,7 +88,7 @@ public class DiscoverNetworks : NetworkDiscovery
 
         if (onDetectServer != null) {
             onDetectServer.Invoke (add, data);
-            print(data);
+	        print(data);
         }
     }
 
@@ -117,16 +117,21 @@ public class DiscoverNetworks : NetworkDiscovery
 
     public void SetBDData(InputField name)
     {
-        bdData = name.text;
+       // bdData = name.text;
+		bdData =  name.GetComponentInParent<HostSetup>().selectedBoard + " " + name.GetComponentInParent<HostSetup>().roomName + " " + name.GetComponentInParent<HostSetup>().selectedCoinsPerRoom.ToString();
+		//print ("This is bd data :" + bdData); 
         if (NetworkTest.isLAN)
         {
             broadcastData = bdData;
         }
         else
         {
+			print ("this is online data " + bdData);
             if(InternetChecker.internetConnectBool)
                 LobbyManager.tempName = bdData;
         }
+
+
     }
 
     public void ReceiveBroadcast()

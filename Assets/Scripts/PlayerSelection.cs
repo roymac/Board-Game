@@ -17,6 +17,7 @@ public class PlayerSelection : MonoBehaviour
 
 
     public static PlayerData playerData = new PlayerData();
+	public static int totalPoolAmount;
 
     //public UIScript ui_script;
     public GameObject[] names;
@@ -31,6 +32,8 @@ public class PlayerSelection : MonoBehaviour
     public static bool isNetworkedGame = false;
 
 	public static int playerSelected;
+
+
 
 	// Use this for initialization
 	void Start () {

@@ -10,7 +10,7 @@ using UnityEngine.Analytics;
 
 public class UIScript : MonoBehaviour
 {
-    public Animator mainMenuAnim, settingsAnimator;
+    public Animator mainMenuAnim, settingsAnimator, flameAnimator_l, flameAnimator_r;
 	public GameObject pauseMenu, mainMenu, gameoverMenu, noofPlayerScreen, playerSelectScene, gameModeScreen, MultiplayerMode, OfflineOnlineMode, themeSelection, creditsScreen, selectPlayerErrorMsg, quitGameBox;
     public Text GameOverText;
     public static int numberOfPlayers = 0;
@@ -18,12 +18,13 @@ public class UIScript : MonoBehaviour
 	public static bool isOnline = false, isSP = false;
 	public SocialManager sm;
 	public Text debugtext;
-	public Sprite muteAudioImg, unmuteAudioImg, lowGraphicImg, highGraphicImg;
-	public Button audioBtn, graphicsBtn;
+	public Sprite muteAudioImg, unmuteAudioImg, lowGraphicImg, highGraphicImg, vibrateOnImg, vibrateOffImg;
+	public Button audioBtn, graphicsBtn, vibrateBtn;
 	public string subject, body;
     public GameObject loadingScreen;
 
 	public bool showQuit = false;
+	public static bool vibrate = true;
 
 
 	bool muteAudio = false, highGraphic = true; 
@@ -37,6 +38,8 @@ public class UIScript : MonoBehaviour
 
 	public GameObject adAvailableBox;
 
+	public ToastMessage _tm;
+
 	void Awake()
 	{
 		
@@ -47,11 +50,11 @@ public class UIScript : MonoBehaviour
     {
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
-		if (SceneManager.GetActiveScene ().name == "ClassicBoard")
+		if (SceneManager.GetActiveScene ().name == "Classic")
         {
 		    AudioManager.Instance.songNumber = 1;
 		}
-        else if(SceneManager.GetActiveScene().name == "StylisedBoard")
+        else if(SceneManager.GetActiveScene().name == "Ruins")
         {
             AudioManager.Instance.songNumber = 2;
         }
@@ -64,7 +67,7 @@ public class UIScript : MonoBehaviour
         if (MultiplayerMode != null)
             MultiplayerMode.SetActive(true);
 
-		GetAudioSettingOnStart ();
+		GetAudioAndGraphicSettingOnStart ();
     }
 
     // Update is called once per frame
@@ -181,6 +184,8 @@ public class UIScript : MonoBehaviour
         noofPlayerScreen.SetActive(true);
         mainMenu.SetActive(false);
         gameModeScreen.SetActive(false);
+		flameAnimator_l.GetComponent<Animator> ().enabled = false;
+		flameAnimator_r.GetComponent<Animator> ().enabled = false;
         isVersusBot = isSP;
         isSP = true;
 
@@ -268,8 +273,10 @@ public class UIScript : MonoBehaviour
 	{
 		playercount--;
 		print ("Playercount" + playercount);
+
 		if(playercount == 0)
 		{
+			CoinManager.AwardCoins (CoinManager.justDeductedCoins);
 			ConLostScreen.SetActive(true);
 			Invoke("LoadMainMenu", 1f);
 			NetworkManager.singleton.StopMatchMaker();
@@ -316,17 +323,28 @@ public class UIScript : MonoBehaviour
         }
     }
 
-	public void GetAudioSettingOnStart()
+	public void GetAudioAndGraphicSettingOnStart()
 	{
 		muteAudio = !(PlayerPrefs.GetInt ("MuteAudio") == 1);
 		if (audioBtn != null) {
 			AudioSetting ();
+		}
+
+		highGraphic = !(PlayerPrefs.GetInt ("HighGraphic") == 1);
+		if (graphicsBtn != null) {
+			ApplyGraphicSetting ();
+		}
+
+		vibrate = !(PlayerPrefs.GetInt ("Vibrate") == 1);
+		if (vibrateBtn != null) {
+			SetVibrateSetting ();
 		}
 	}
 
 
 	public void AudioSetting()
 	{
+		print ("Audio settings" + muteAudio);
 		muteAudio = !muteAudio;
 
 		AudioManager.mute = muteAudio;
@@ -335,17 +353,37 @@ public class UIScript : MonoBehaviour
 		if (muteAudio) 
 		{
 			audioBtn.GetComponent<Image> ().sprite = muteAudioImg;
+			_tm.showToastOnUiThread ("Sound Off");
 			PlayerPrefs.SetInt ("MuteAudio", 1);
 		}
 		else if (!muteAudio)
 		{
 			//AudioManager.Instance.UIClick();
 			audioBtn.GetComponent<Image> ().sprite = unmuteAudioImg;
+			_tm.showToastOnUiThread ("Sound On");
 			PlayerPrefs.SetInt("MuteAudio", 0);
 			//AudioManager.Instance.MuteAudioSources (false);
 		}
 
 	
+	}
+
+	public void SetVibrateSetting()
+	{
+		vibrate = !vibrate;
+
+		if (vibrate)
+		{
+			vibrateBtn.GetComponent<Image> ().sprite = vibrateOnImg;
+			_tm.showToastOnUiThread ("Vibration On");
+			PlayerPrefs.SetInt ("Vibrate", 1);
+		}
+		else if (!vibrate)
+		{
+			vibrateBtn.GetComponent<Image> ().sprite = vibrateOffImg;
+			_tm.showToastOnUiThread ("Vibration Off");
+			PlayerPrefs.SetInt ("Vibrate", 0);
+		}
 	}
 
 
@@ -395,11 +433,15 @@ public class UIScript : MonoBehaviour
 		if (highGraphic) 
 		{
 			graphicsBtn.GetComponent<Image> ().sprite = highGraphicImg;
+			PlayerPrefs.SetInt ("HighGraphic", 1);
+			_tm.showToastOnUiThread ("High Graphics");
 			_qm.SetHighResolution ();		
 		}
 		else
 		{
 			graphicsBtn.GetComponent<Image> ().sprite = lowGraphicImg;
+			PlayerPrefs.SetInt ("HighGraphic", 0);
+			_tm.showToastOnUiThread ("Low Graphics");
 			_qm.setLowResolution ();
 		}
 		AudioManager.Instance.UIClick();

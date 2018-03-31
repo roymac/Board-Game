@@ -10,7 +10,7 @@ public class AnimControl : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		menuElement = this.GetComponent<Animator> ();
+		//menuElement = this.GetComponent<Animator> ();
 		showingMenu = false;
 	}
 	
@@ -44,6 +44,8 @@ public class AnimControl : MonoBehaviour {
 
 		toScreen.GetComponent<Animator>().SetTrigger ("ShowMenu");
 	}
+
+
 
 	public void SetSettingsMenu()
 	{
